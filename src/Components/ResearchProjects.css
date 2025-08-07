@@ -1,0 +1,75 @@
+.research-projects-page {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  padding: 2rem 0;
+}
+
+.page-header {
+  text-align: center;
+  margin-bottom: 2rem;
+  color: #fff;
+}
+
+.page-header h1 {
+  font-size: 2.5rem;
+  font-weight: bold;
+  margin-bottom: 1rem;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.page-header p {
+  font-size: 1.2rem;
+  opacity: 0.9;
+}
+
+.coming-soon-card {
+  border: none;
+  border-radius: 15px;
+  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
+  backdrop-filter: blur(10px);
+  background: rgba(255, 255, 255, 0.95);
+  padding: 2rem;
+}
+
+.coming-soon-icon {
+  font-size: 4rem;
+  color: #667eea;
+  margin-bottom: 1.5rem;
+}
+
+.coming-soon-card h3 {
+  color: #333;
+  font-weight: bold;
+  margin-bottom: 1rem;
+}
+
+.coming-soon-card p {
+  color: #666;
+  font-size: 1.1rem;
+  margin-bottom: 1.5rem;
+}
+
+.feature-list {
+  text-align: left;
+  color: #555;
+  font-size: 1rem;
+}
+
+.feature-list li {
+  margin-bottom: 0.5rem;
+  padding-left: 1rem;
+}
+
+@media (max-width: 768px) {
+  .page-header h1 {
+    font-size: 2rem;
+  }
+  
+  .page-header p {
+    font-size: 1rem;
+  }
+  
+  .coming-soon-card {
+    padding: 1.5rem;
+  }
+} 
