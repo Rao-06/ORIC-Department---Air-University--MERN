@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
-import airlogo from '../Assets/airlogo.png';
+import airlogo from '../../Assets/airlogo.png';
 import './Login.css'; // Ensure this path is correct
 import { FaEnvelope, FaLock, FaUser } from 'react-icons/fa';
 import { Link, useNavigate } from 'react-router-dom';
-import logosvg from '../Assets/svg.svg';
+import logosvg from '../../Assets/svg.svg';
 
 const Login = ({ onLogin }) => {
   const navigate = useNavigate();

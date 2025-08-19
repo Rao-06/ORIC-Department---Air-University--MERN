@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import './ResetPassword.css';
 import { Link, useNavigate } from 'react-router-dom';
-import airlogo from '../Assets/airlogo.png';
+import airlogo from '../../Assets/airlogo.png';
 
 function ResetPassword() {
   const [newPassword, setNewPassword] = useState('');

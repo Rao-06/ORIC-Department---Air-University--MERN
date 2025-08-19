@@ -1,16 +1,19 @@
 // src/App.js
 import React, { useState } from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
-import Signup from './Components/Signup.js';
-import Login from './Components/Login.js';
-import ForgetPassword from './Components/ForgetPassword.js';
-import ResetPassword from './Components/ResetPassword.js';
-import Layout from './Components/Layout.js';
-import Dashboard from './Components/Dashboard.js';
-import Profile from './Components/Profile.js';
-import ResearchGrants from './Components/ResearchGrants.js';
-import ResearchProjects from './Components/ResearchProjects.js';
-import Publications from './Components/Publications.js';
+import Signup from './Components/Auth/Signup.js';
+import Login from './Components/Auth/Login.js';
+import ForgetPassword from './Components/Auth/ForgetPassword.js';
+import ResetPassword from './Components/Auth/ResetPassword.js';
+import Layout from './Components/Layout/Layout.js';
+import Dashboard from './Components/Dashboard/Dashboard.js';
+import Profile from './Components/Profile/Profile.js';
+import ResearchGrants from './Components/Research/ResearchGrants.js';
+import PersonalInformation from './Components/Research/PersonalInformation.js';
+import EducationalInformation from './Components/Research/EducationalInformation.js';
+import EmploymentInformation from './Components/Research/EmploymentInformation.js';
+import ResearchGrantApplication from './Components/Research/ResearchGrantApplication.js';
+
 import 'bootstrap/dist/css/bootstrap.min.css';
 
 function App() {
@@ -39,8 +42,11 @@ function App() {
           <Route path="dashboard" element={<Dashboard />} />
           <Route path="profile" element={<Profile user={user} />} />
           <Route path="research-grants" element={<ResearchGrants />} />
-          <Route path="research-projects" element={<ResearchProjects />} />
-          <Route path="publications" element={<Publications />} />
+          <Route path="personal-information" element={<PersonalInformation />} />
+          <Route path="educational-information" element={<EducationalInformation />} />
+          <Route path="employment-information" element={<EmploymentInformation />} />
+          <Route path="research-grant-application" element={<ResearchGrantApplication />} />
+
         </Route>
         
         <Route path="*" element={<Navigate to="/signup" replace />} />

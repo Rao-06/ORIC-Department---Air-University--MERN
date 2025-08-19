@@ -4,7 +4,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import Login from './Login.js';
 import { FaUser, FaEnvelope, FaLock, FaPhone, FaIdCard, FaEye, FaEyeSlash } from 'react-icons/fa';
 
-import logosvg from '../Assets/svg.svg';
+import logosvg from '../../Assets/svg.svg';
 const Signup = ({ onSignup }) => {
   const [formData, setFormData] = useState({
     name: '',

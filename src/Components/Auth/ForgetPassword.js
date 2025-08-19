@@ -2,8 +2,8 @@ import React, { useState } from 'react';
 import './ForgetPassword.css';
 import { Link, useNavigate } from 'react-router-dom';
 import { FaEnvelope, FaIdCard, FaPhone } from 'react-icons/fa';
-import airlogo from '../Assets/airlogo.png';
-import logosvg from '../Assets/svg.svg';
+import airlogo from '../../Assets/airlogo.png';
+import logosvg from '../../Assets/svg.svg';
 function ForgetPassword() {
   const [email, setEmail] = useState('');
   const [cnic, setCnic] = useState('');
