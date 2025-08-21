@@ -1,29 +1,54 @@
 import React, { useState } from 'react';
 import './ResetPassword.css';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import airlogo from '../../Assets/airlogo.png';
+import { httpRequest } from '../../api/http.js';
 
 function ResetPassword() {
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [error, setError] = useState('');
+  const [success, setSuccess] = useState('');
+  const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
+  const location = useLocation();
 
-  const handleSubmit = (e) => {
+  const searchParams = new URLSearchParams(location.search);
+  const token = searchParams.get('token');
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    
+    setError('');
+    setSuccess('');
+
+    if (!token) {
+      setError('Invalid or missing reset token');
+      return;
+    }
+
     if (newPassword !== confirmPassword) {
       setError('Passwords do not match');
       return;
     }
-    
-    if (newPassword.length < 6) {
-      setError('Password must be at least 6 characters long');
+
+    if (!/^(?=.*[0-9])(?=.*[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]).{8,}$/.test(newPassword)) {
+      setError('Min 8 chars, include number and special character');
       return;
     }
-    
-    // Handle password reset logic here
-    console.log('Password reset submitted:', { newPassword });
-    // You can add navigation to login page here
+
+    try {
+      setLoading(true);
+      await httpRequest('/auth/reset-password', {
+        method: 'PUT',
+        body: { token, password: newPassword }
+      });
+      setSuccess('Password reset successfully. Redirecting to login...');
+      setTimeout(() => navigate('/login'), 1500);
+    } catch (err) {
+      setError(err.message || 'Failed to reset password');
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -58,8 +83,9 @@ function ResetPassword() {
                 required 
               />
               {error && <p className="text-danger text-center">{error}</p>}
-              <button type="submit" className='ResetPassword-button'>
-                Reset Password
+              {success && <p className="text-success text-center">{success}</p>}
+              <button type="submit" className='ResetPassword-button' disabled={loading}>
+                {loading ? 'Resetting...' : 'Reset Password'}
               </button>
             </form>
           </div>

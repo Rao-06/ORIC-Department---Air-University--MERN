@@ -4,6 +4,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { FaEnvelope, FaIdCard, FaPhone } from 'react-icons/fa';
 import airlogo from '../../Assets/airlogo.png';
 import logosvg from '../../Assets/svg.svg';
+import { httpRequest } from '../../api/http.js';
 function ForgetPassword() {
   const [email, setEmail] = useState('');
   const [cnic, setCnic] = useState('');
@@ -18,41 +19,24 @@ function ForgetPassword() {
     setSuccess('');
     setLoading(true);
     
-    // Validate fields
-    if (!email || !cnic || !contact) {
-      setError('Please fill in all fields');
+    // Validate fields (email is required for backend)
+    if (!email) {
+      setError('Please enter your email');
       setLoading(false);
       return;
     }
     
-    // Validate email format
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
       setError('Please enter a valid email address');
       setLoading(false);
       return;
     }
     
-    // Validate CNIC format
-    if (!/^\d{5}-\d{7}-\d{1}$/.test(cnic)) {
-      setError('CNIC must be in format XXXXX-XXXXXXX-X');
-      setLoading(false);
-      return;
-    }
-    
-    // Validate phone format
-    if (!/^03\d{9}$/.test(contact)) {
-      setError('Phone must be 11 digits, start with 03');
-      setLoading(false);
-      return;
-    }
-    
     try {
-      // Simulate API delay
-      await new Promise(resolve => setTimeout(resolve, 1500));
+      await httpRequest('/auth/forgot-password', { method: 'POST', body: { email } });
       setSuccess('Password reset link sent to your email!');
-      // You can add navigation to reset password page here
     } catch (err) {
-      setError('Failed to send reset link. Please try again.');
+      setError(err.message || 'Failed to send reset link. Please try again.');
     }
     setLoading(false);
   };
@@ -99,7 +83,6 @@ function ForgetPassword() {
                 value={cnic}
                 onChange={(e) => setCnic(e.target.value)}
                 placeholder="XXXXX-XXXXXXX-X"
-                required 
               />
             </div>
             
@@ -115,7 +98,6 @@ function ForgetPassword() {
                 value={contact}
                 onChange={(e) => setContact(e.target.value)}
                 placeholder="03XXXXXXXXX"
-                required 
               />
             </div>
             

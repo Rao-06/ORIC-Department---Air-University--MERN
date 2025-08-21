@@ -4,6 +4,7 @@ import './Login.css'; // Ensure this path is correct
 import { FaEnvelope, FaLock, FaUser } from 'react-icons/fa';
 import { Link, useNavigate } from 'react-router-dom';
 import logosvg from '../../Assets/svg.svg';
+import { httpRequest } from '../../api/http.js';
 
 const Login = ({ onLogin }) => {
   const navigate = useNavigate();
@@ -11,28 +12,33 @@ const Login = ({ onLogin }) => {
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [showPassword, setShowPassword] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
+    setLoading(true);
     
-    // Basic frontend validation
     if (!employeeId || !password) {
       setError('Please fill in all fields');
+      setLoading(false);
       return;
     }
-    
-    // Simulate login success for demo
-    const userData = {
-      employeeId: employeeId,
-      name: 'John Doe',
-      email: 'john.doe@au.edu.pk',
-      department: 'Computer Science',
-      designation: 'Assistant Professor'
-    };
-    
-    onLogin(userData);
-    navigate('/dashboard');
+
+    try {
+      const res = await httpRequest('/auth/login', {
+        method: 'POST',
+        body: { employeeId, password }
+      });
+      // Persist token and user for subsequent requests
+      localStorage.setItem('auth_token', res.token);
+      localStorage.setItem('auth_user', JSON.stringify(res.user));
+      onLogin && onLogin(res.user);
+      navigate('/dashboard');
+    } catch (err) {
+      setError(err.message || 'Login failed');
+    }
+    setLoading(false);
   };
 
   return (
@@ -83,8 +89,8 @@ const Login = ({ onLogin }) => {
                 />
                 <label htmlFor="showPassword" className="form-check-label ms-2">Show Password</label>
               </div>
-              <button type="submit" className="btn btn-primary w-100 mb-3">
-                Login
+              <button type="submit" className="btn btn-primary w-100 mb-3" disabled={loading}>
+                {loading ? 'Signing in...' : 'Login'}
               </button>
               {error && <p className="text-danger text-center">{error}</p>}
              <a href="/forgot-password" className="d-block text-end"

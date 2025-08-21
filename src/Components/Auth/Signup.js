@@ -5,6 +5,7 @@ import Login from './Login.js';
 import { FaUser, FaEnvelope, FaLock, FaPhone, FaIdCard, FaEye, FaEyeSlash } from 'react-icons/fa';
 
 import logosvg from '../../Assets/svg.svg';
+import { httpRequest } from '../../api/http.js';
 const Signup = ({ onSignup }) => {
   const [formData, setFormData] = useState({
     name: '',
@@ -43,6 +44,11 @@ const Signup = ({ onSignup }) => {
     }
     if (name === 'employeeId') {
       if (!/^AUTO-\d{4}$/.test(value)) error = 'Employee ID must be in format AUTO-0001';
+    }
+    if (name === 'password') {
+      if (!/^(?=.*[0-9])(?=.*[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]).{8,}$/.test(value)) {
+        error = 'Min 8 chars, include number and special character';
+      }
     }
     return error;
   };
@@ -90,15 +96,21 @@ const Signup = ({ onSignup }) => {
     }
     
     try {
-      // Simulate API delay
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      
-      // Simulate successful signup
+      const payload = {
+        name: formData.name,
+        email: formData.email,
+        employeeId: formData.employeeId,
+        password: formData.password,
+        phone: formData.phone,
+        cnic: formData.cnic,
+        city: formData.city
+      };
+      const res = await httpRequest('/auth/register', { method: 'POST', body: payload });
       setSuccess('Signup successful! Redirecting to login...');
       onSignup && onSignup({ message: 'User created' });
-      setTimeout(() => navigate('/login'), 2000);
+      setTimeout(() => navigate('/login'), 1500);
     } catch (err) {
-      setError('Signup failed');
+      setError(err.message || 'Signup failed');
     }
     setLoading(false);
   };
