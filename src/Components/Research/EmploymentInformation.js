@@ -173,14 +173,14 @@ const EmploymentInformation = () => {
               <div className="accordion-section">
                 <div className="accordion-header" onClick={() => toggleSection(0)} style={{ cursor: 'pointer' }}>
                   <span>1. Employment Details</span>
-                  <span className="accordion-arrow">{activeSectionIndex === 0 ? <FaChevronUp /> : <FaChevronDown />}</span>
+                  <span className="accordion-arrow">{activeSectionIndex === 0 ? <FaChevronDown /> : <FaChevronUp />}</span>
                 </div>
                 <div className={`accordion-panel ${activeSectionIndex === 0 ? 'open' : ''}`}>
-                  {activeSectionIndex === 0 && (
-                  <div className="accordion-content">
+                  <div className="accordion-content" aria-hidden={activeSectionIndex !== 0}>
                     <div className="form-row" style={{ alignItems: 'center' }}>
-                      <div className="form-group" style={{ flexDirection: 'row', gap: '24px' }}>
+                      <div className="form-group" style={{ flexDirection: 'row', gap: '24px' , justifyContent: 'space-between'}}>
                         <label style={{ fontWeight: 700, color: '#111', marginRight: '8px' }}>Organization Type</label>
+                        <div style={{ display: 'flex', gap: '24px' }}>
                         <label className="checkbox-label" style={{ gap: '6px' }}>
                           <input type="radio" name="organizationType" value="ACADEMIC" checked={employmentData.organizationType === 'ACADEMIC'} onChange={handleChange} />
                           ACADEMIC
@@ -189,6 +189,7 @@ const EmploymentInformation = () => {
                           <input type="radio" name="organizationType" value="PROFESSIONAL" checked={employmentData.organizationType === 'PROFESSIONAL'} onChange={handleChange} />
                           PROFESSIONAL
                         </label>
+                        </div>
                       </div>
                     </div>
             <div className="form-row">
@@ -255,7 +256,6 @@ const EmploymentInformation = () => {
                       </div>
                     </div>
                   </div>
-                  )}
                 </div>
               </div>
 
@@ -263,11 +263,10 @@ const EmploymentInformation = () => {
               <div className="accordion-section">
                 <div className="accordion-header" onClick={() => toggleSection(1)} style={{ cursor: 'pointer' }}>
                   <span>2. Employment Address Details</span>
-                  <span className="accordion-arrow">{activeSectionIndex === 1 ? <FaChevronUp /> : <FaChevronDown />}</span>
+                  <span className="accordion-arrow">{activeSectionIndex === 1 ? <FaChevronDown /> : <FaChevronUp />}</span>
                 </div>
                 <div className={`accordion-panel ${activeSectionIndex === 1 ? 'open' : ''}`}>
-                  {activeSectionIndex === 1 && (
-                  <div className="accordion-content">
+                  <div className="accordion-content" aria-hidden={activeSectionIndex !== 1}>
                     <div className="form-row">
                       <div className="form-group">
                         <label>Country <span className="required">*</span></label>
@@ -329,19 +328,17 @@ const EmploymentInformation = () => {
                       </div>
                     </div>
                   </div>
-                  )}
                 </div>
               </div>
 
               {/* Section 3 */}
               <div className="accordion-section">
-                <div className="accordion-header" onClick={() => toggleSection(2)} style={{ cursor: 'pointer' }}>
+                <div className="accordion-header" onClick={() => toggleSection(2)} style={{ cursor: 'pointer'}}>
                   <span>3. Job Details</span>
-                  <span className="accordion-arrow">{activeSectionIndex === 2 ? <FaChevronUp /> : <FaChevronDown />}</span>
+                  <span className="accordion-arrow">{activeSectionIndex === 2 ? <FaChevronDown /> : <FaChevronUp />}</span>
                 </div>
                 <div className={`accordion-panel ${activeSectionIndex === 2 ? 'open' : ''}`}>
-                  {activeSectionIndex === 2 && (
-                  <div className="accordion-content">
+                  <div className="accordion-content" aria-hidden={activeSectionIndex !== 2}>
                     <div className="form-row">
                       <div className="form-group">
                         <label>Job Type <span className="required">*</span></label>
@@ -415,7 +412,6 @@ const EmploymentInformation = () => {
                       </div>
                     </div>
                   </div>
-                  )}
                 </div>
               </div>
             </div>

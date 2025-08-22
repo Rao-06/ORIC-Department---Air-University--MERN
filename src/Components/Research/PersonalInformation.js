@@ -1,13 +1,14 @@
-import React, { useState } from 'react';
+import React, { useRef, useState } from 'react';
 import Select from 'react-select';
-import { FaArrowLeft, FaEdit, FaMale, FaFemale, FaTransgender, FaUser, FaCalendarAlt, FaCheck, FaPencilAlt, FaExclamationCircle } from 'react-icons/fa';
+import { FaArrowLeft, FaEdit, FaMale, FaFemale, FaTransgender, FaUser, FaUserFriends, FaHeartBroken, FaCalendarAlt, FaCheck, FaPencilAlt, FaExclamationCircle } from 'react-icons/fa';
 import { useNavigate } from 'react-router-dom';
 import './PersonalInformation.css';
+import defaultAvatar from '../../Assets/profilepic.png';
 
 const maritalOptions = [
   { value: 'single', label: 'Single', icon: <FaUser /> },
-  { value: 'married', label: 'Married', icon: <FaUser /> },
-  { value: 'divorced', label: 'Divorced', icon: <FaUser /> },
+  { value: 'married', label: 'Married', icon: <FaUserFriends /> },
+  { value: 'divorced', label: 'Divorced', icon: <FaHeartBroken /> },
 ];
 const genderOptions = [
   { value: 'male', label: 'Male', icon: <FaMale /> },
@@ -38,6 +39,7 @@ const requiredFields = [
 const PersonalInformation = () => {
   const navigate = useNavigate();
   const [profilePic, setProfilePic] = useState(null);
+  const titleValidityRef = useRef(null);
   const [formData, setFormData] = useState({
     title: '',
     firstName: '',
@@ -102,6 +104,13 @@ const PersonalInformation = () => {
     setErrors(newErrors);
     if (Object.keys(newErrors).length === 0) {
       navigate('/educational-information');
+    } else {
+      if (newErrors.title && titleValidityRef.current) {
+        try {
+          titleValidityRef.current.setCustomValidity('Please fill in this field.');
+          titleValidityRef.current.reportValidity();
+        } catch {}
+      }
     }
   };
 
@@ -155,7 +164,7 @@ const PersonalInformation = () => {
             </div>
             <label htmlFor="profilePicInput" className="profile-pic-label">
               <img
-                src={profilePic || 'https://via.placeholder.com/100x100?text=Photo'}
+                src={profilePic || defaultAvatar}
                 alt="Profile"
                 className="profile-pic profile-pic-square"
               />
@@ -170,7 +179,12 @@ const PersonalInformation = () => {
                 classNamePrefix="react-select"
                 options={titleOptions}
                 value={titleOptions.find(opt => opt.value === formData.title) || null}
-                onChange={option => handleInputChange({ target: { name: 'title', value: option ? option.value : '' } })}
+                onChange={option => {
+                  handleInputChange({ target: { name: 'title', value: option ? option.value : '' } });
+                  if (titleValidityRef.current) {
+                    try { titleValidityRef.current.setCustomValidity(''); } catch {}
+                  }
+                }}
                 placeholder=" "
                 isSearchable
                 styles={{
@@ -184,6 +198,14 @@ const PersonalInformation = () => {
                   placeholder: base => ({ ...base, color: '#888', fontSize: '15px' }),
                 }}
                 isClearable
+              />
+              {/* Hidden input to trigger native required tooltip for title */}
+              <input
+                ref={titleValidityRef}
+                value={formData.title}
+                onChange={() => {}}
+                required
+                style={{ position: 'absolute', opacity: 0, height: 0, width: 0, pointerEvents: 'none' }}
               />
               <label className={formData.title ? 'float' : ''}></label>
               {errors.title && submitted && <span className="error-message">{errors.title}</span>}
@@ -199,13 +221,12 @@ const PersonalInformation = () => {
             </div>
           </div>
           <div className="row-3">
-            <div className="form-group floating-label-group">
-              <input name="lastName" value={formData.lastName} placeholder='Last Name' onChange={handleInputChange} required className={formData.lastName ? 'has-value' : ''} />
-              <label className={formData.lastName ? 'float' : ''}></label>
+            <div className="form-group">
+              <input name="lastName" value={formData.lastName} placeholder='Last Name' onChange={handleInputChange} required style={{marginTop: '35px'}} />
               {errors.lastName && submitted && <span className="error-message">{errors.lastName}</span>}
             </div>
             <div className="form-group">
-           
+              <label className="small-label">Marital Status</label>
               <div className="icon-group">
                 {maritalOptions.map(opt => (
                   <button
@@ -221,7 +242,7 @@ const PersonalInformation = () => {
               </div>
             </div>
             <div className="form-group">
-          
+              <label className="small-label">Gender</label>
               <div className="icon-group">
              
                 {genderOptions.map(opt => (

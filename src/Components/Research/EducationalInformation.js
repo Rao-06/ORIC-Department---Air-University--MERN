@@ -475,6 +475,20 @@ function EducationalInformation({ onSubmit }) {
           )}
         </div>
       </div>
+      {/* Bottom Navigation - Always visible */}
+      <div className="form-navigation nav-bottom">
+        <button type="button" className="nav-button prev-button" onClick={() => navigate('/personal-information')}>
+          GO BACK
+        </button>
+        <div style={{display: 'flex', gap: '10px'}}>
+          <button type="button" className="nav-button save-button">
+            SAVE & CLOSE
+          </button>
+          <button type="button" className="nav-button next-button" onClick={() => navigate('/employment-information')}>
+            NEXT STEP
+          </button>
+        </div>
+      </div>
     </div>
   );
 }

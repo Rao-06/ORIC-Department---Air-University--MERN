@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { FaArrowLeft, FaChevronDown } from 'react-icons/fa';
+import { FaArrowLeft, FaChevronDown, FaExclamationCircle, FaCheck } from 'react-icons/fa';
 import { useNavigate } from 'react-router-dom';
 import './ResearchGrants.css';
 
@@ -8,6 +8,19 @@ const ResearchGrants = () => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [selectedOption, setSelectedOption] = useState('');
   const dropdownRef = useRef(null);
+  
+  // Progress tracker config (aligned with other steps)
+  const steps = [
+    { id: 1, title: 'Research Grant', completed: true, active: true, path: '/research-grants' },
+    { id: 2, title: 'Personal Information', completed: false, path: '/personal-information' },
+    { id: 3, title: 'Educational Information', completed: false, path: '/educational-information' },
+    { id: 4, title: 'Employment Information', completed: false, path: '/employment-information' },
+    { id: 5, title: 'Research Grant Application Form', completed: false, path: '/research-grant-application' }
+  ];
+  const handleStepClick = (stepId) => {
+    if (stepId === 1) return; // already here
+    if (stepId === 2) navigate('/personal-information');
+  };
 
   const grantOptions = [
     {
@@ -60,6 +73,36 @@ const ResearchGrants = () => {
           <FaArrowLeft className="back-icon" />
           Back to Dashboard
         </button>
+      </div>
+
+      {/* Progress Tracker Card */}
+      <div className="progress-tracker-card">
+        <div className="important-note modern-note">
+          <FaExclamationCircle className="note-icon" />
+          <span className="note-text">
+            Note: Last date of <strong>"PERIDOT Research Program"</strong> application submission is{' '}
+            <span className="deadline">"23/09/25 at 11:59PM"</span>. Saved applications will not be considered after this time.
+          </span>
+        </div>
+        <div className="modern-progress-tracker">
+          {steps.map((step, index) => (
+            <div key={step.id} className="modern-step-container">
+              <div 
+                className={`step-circle ${step.completed ? 'completed' : step.active ? 'active' : 'inactive'}`}
+                onClick={() => handleStepClick(step.id)}
+                style={{ cursor: step.completed || step.active ? 'pointer' : 'default' }}
+              >
+                {step.completed ? (
+                  <FaCheck className="step-icon" />
+                ) : (
+                  <span>{step.id}</span>
+                )}
+              </div>
+              <span className={`step-label ${step.active ? 'active' : step.completed ? 'completed' : ''}`}>{step.title}</span>
+              {index < steps.length - 1 && <div className="modern-step-connector" />}
+            </div>
+          ))}
+        </div>
       </div>
 
       {/* Form Content */}
