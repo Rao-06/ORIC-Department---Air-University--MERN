@@ -3,6 +3,7 @@ import Select from 'react-select';
 import { FaArrowLeft, FaEdit, FaMale, FaFemale, FaTransgender, FaUser, FaCalendarAlt, FaCheck, FaPencilAlt, FaExclamationCircle } from 'react-icons/fa';
 import { useNavigate } from 'react-router-dom';
 import './PersonalInformation.css';
+import { httpRequest } from '../../api/http.js';
 
 const maritalOptions = [
   { value: 'single', label: 'Single', icon: <FaUser /> },
@@ -14,8 +15,268 @@ const genderOptions = [
   { value: 'female', label: 'Female', icon: <FaFemale /> },
   { value: 'other', label: 'Other', icon: <FaTransgender /> },
 ];
-const countryList = ['Pakistan', 'India', 'USA', 'UK']; // Example
-const cityList = ['Islamabad', 'Lahore', 'Karachi', 'Peshawar']; // Example
+// Countries and their cities (extend as needed)
+const countryToCities = {
+  Pakistan: [
+    'Islamabad', 'Ahmed Nager', 'Ahmadpur East', 'Ali Khan', 'Alipur', 'Arifwala', 'Attock', 'Bhera', 'Bhalwal', 'Bahawalnagar', 'Bahawalpur', 'Bhakkar', 'Burewala', 'Chillianwala', 'Chak', 'Chakwal', 'Chichawatni', 'Chiniot', 'Chishtian', 'Daska', 'Darya Khan', 'Dera Ghazi', 'Dhaular', 'Dina', 'Dinga', 'Dipalpur', 'Faisalabad', 'Fateh Jhang', 'Ghakhar Mandi', 'Gojra', 'Gujranwala', 'Gujrat', 'Gujar Khan', 'Hafizabad', 'Haroonabad', 'Hasilpur', 'Haveli', 'Lakha', 'Jalalpur', 'Jattan', 'Jampur', 'Jaranwala', 'Jhang', 'Jhelum', 'Kalabagh', 'Karor Lal', 'Kasur', 'Kamalia', 'Kamoke', 'Khanewal', 'Khanpur', 'Kharian', 'Khushab', 'Kot Adu', 'Jauharabad', 'Lahore', 'Lalamusa', 'Layyah', 'Liaquat Pur', 'Lodhran', 'Malakwal', 'Mamoori', 'Mailsi', 'Mandi Bahauddin', 'mian Channu', 'Mianwali', 'Multan', 'Murree', 'Muridke', 'Mianwali Bangla', 'Muzaffargarh', 'Narowal', 'Okara', 'Renala Khurd', 'Pakpattan', 'Pattoki', 'Pir Mahal', 'Qaimpur', 'Qila Didar', 'Rabwah', 'Raiwind', 'Rajanpur', 'Rahim Yar', 'Rawalpindi', 'Sadiqabad', 'Safdarabad', 'Sahiwal', 'Sangla Hill', 'Sarai Alamgir', 'Sargodha', 'Shakargarh', 'Sheikhupura', 'Sialkot', 'Sohawa', 'Soianwala', 'Siranwali', 'Talagang', 'Taxila', 'Toba Tek', 'Vehari', 'Wah Cantonment', 'Wazirabad', 'Badin', 'Bhirkan', 'Rajo Khanani', 'Dadu', 'Digri', 'Diplo', 'Dokri', 'Ghotki', 'Haala', 'Hyderabad', 'Islamkot', 'Jacobabad', 'Jamshoro', 'Jungshahi', 'Kandhkot', 'Kandiaro', 'Karachi', 'Kashmore', 'Keti Bandar', 'Khairpur', 'Kotri', 'Larkana', 'Matiari', 'Mehar', 'Mirpur Khas', 'Mithani', 'Mithi', 'Mehrabpur', 'Moro', 'Nagarparkar', 'Naudero', 'Naushahro Feroze', 'Naushara', 'Nawabshah', 'Nazimabad', 'Qambar', 'Qasimabad', 'Ranipur', 'Ratodero', 'Rohri', 'Sakrand', 'Sanghar', 'Shahbandar', 'Shahdadkot', 'Shahdadpur', 'Shahpur Chakar', 'Shikarpaur', 'Sukkur', 'Tangwani', 'Tando Adam', 'Tando Allahyar', 'Tando Muhammad', 'Thatta', 'Umerkot', 'Warah', 'Abbottabad', 'Adezai', 'Alpuri', 'Akora Khattak', 'Ayubia', 'Banda Daud', 'Bannu', 'Batkhela', 'Battagram', 'Birote', 'Chakdara', 'Charsadda', 'Chitral', 'Daggar', 'Dargai', 'dera Ismail', 'Doaba', 'Dir', 'Drosh', 'Hangu', 'Haripur', 'Karak', 'Kohat', 'Kulachi', 'Lakki Marwat', 'Latamber', 'Madyan', 'Mansehra', 'Mardan', 'Mastuj', 'Mingora', 'Nowshera', 'Paharpur', 'Pabbi', 'Peshawar', 'Saidu Sharif', 'Shorkot', 'Shewa Adda', 'Swabi', 'Swat', 'Tangi', 'Tank', 'Thall', 'Timergara', 'Tordher', 'Awaran', 'Barkhan', 'Chagai', 'Dera Bugti', 'Gwadar', 'Harnai', 'Jafarabad', 'Jhal Magsi', 'Kacchi', 'Kalat', 'Kech', 'Kharan', 'Khuzdar', 'Killa Abdullah', 'Killa Saifullah', 'Kohlu', 'Lasbela', 'Lehri', 'Loralai', 'Mastung', 'Musakhel', 'Nasirabad', 'Nushki', 'Panjgur', 'Pishin valley', 'Quetta', 'Sherani', 'Sibi', 'Sohbatpur', 'Washuk', 'Zhob', 'Ziarat'
+  ],
+  India: ['Delhi', 'Mumbai', 'Bengaluru', 'Hyderabad', 'Chennai', 'Kolkata'],
+  USA: ['New York', 'Los Angeles', 'Chicago', 'Houston', 'San Francisco', 'Seattle'],
+  UK: ['London', 'Manchester', 'Birmingham', 'Leeds', 'Glasgow', 'Liverpool'],
+};
+const countryList = [
+	"Afghanistan",
+	"Albania",
+	"Algeria",
+	"American Samoa",
+	"Andorra",
+	"Angola",
+	"Anguilla",
+	"Antarctica",
+	"Antigua and Barbuda",
+	"Argentina",
+	"Armenia",
+	"Aruba",
+	"Australia",
+	"Austria",
+	"Azerbaijan",
+	"Bahamas (the)",
+	"Bahrain",
+	"Bangladesh",
+	"Barbados",
+	"Belarus",
+	"Belgium",
+	"Belize",
+	"Benin",
+	"Bermuda",
+	"Bhutan",
+	"Bolivia (Plurinational State of)",
+	"Bonaire, Sint Eustatius and Saba",
+	"Bosnia and Herzegovina",
+	"Botswana",
+	"Bouvet Island",
+	"Brazil",
+	"British Indian Ocean Territory (the)",
+	"Brunei Darussalam",
+	"Bulgaria",
+	"Burkina Faso",
+	"Burundi",
+	"Cabo Verde",
+	"Cambodia",
+	"Cameroon",
+	"Canada",
+	"Cayman Islands (the)",
+	"Central African Republic (the)",
+	"Chad",
+	"Chile",
+	"China",
+	"Christmas Island",
+	"Cocos (Keeling) Islands (the)",
+	"Colombia",
+	"Comoros (the)",
+	"Congo (the Democratic Republic of the)",
+	"Congo (the)",
+	"Cook Islands (the)",
+	"Costa Rica",
+	"Croatia",
+	"Cuba",
+	"Curaçao",
+	"Cyprus",
+	"Czechia",
+	"Côte d'Ivoire",
+	"Denmark",
+	"Djibouti",
+	"Dominica",
+	"Dominican Republic (the)",
+	"Ecuador",
+	"Egypt",
+	"El Salvador",
+	"Equatorial Guinea",
+	"Eritrea",
+	"Estonia",
+	"Eswatini",
+	"Ethiopia",
+	"Falkland Islands (the) [Malvinas]",
+	"Faroe Islands (the)",
+	"Fiji",
+	"Finland",
+	"France",
+	"French Guiana",
+	"French Polynesia",
+	"French Southern Territories (the)",
+	"Gabon",
+	"Gambia (the)",
+	"Georgia",
+	"Germany",
+	"Ghana",
+	"Gibraltar",
+	"Greece",
+	"Greenland",
+	"Grenada",
+	"Guadeloupe",
+	"Guam",
+	"Guatemala",
+	"Guernsey",
+	"Guinea",
+	"Guinea-Bissau",
+	"Guyana",
+	"Haiti",
+	"Heard Island and McDonald Islands",
+	"Holy See (the)",
+	"Honduras",
+	"Hong Kong",
+	"Hungary",
+	"Iceland",
+	"India",
+	"Indonesia",
+	"Iran (Islamic Republic of)",
+	"Iraq",
+	"Ireland",
+	"Isle of Man",
+	"Israel",
+	"Italy",
+	"Jamaica",
+	"Japan",
+	"Jersey",
+	"Jordan",
+	"Kazakhstan",
+	"Kenya",
+	"Kiribati",
+	"Korea (the Democratic People's Republic of)",
+	"Korea (the Republic of)",
+	"Kuwait",
+	"Kyrgyzstan",
+	"Lao People's Democratic Republic (the)",
+	"Latvia",
+	"Lebanon",
+	"Lesotho",
+	"Liberia",
+	"Libya",
+	"Liechtenstein",
+	"Lithuania",
+	"Luxembourg",
+	"Macao",
+	"Madagascar",
+	"Malawi",
+	"Malaysia",
+	"Maldives",
+	"Mali",
+	"Malta",
+	"Marshall Islands (the)",
+	"Martinique",
+	"Mauritania",
+	"Mauritius",
+	"Mayotte",
+	"Mexico",
+	"Micronesia (Federated States of)",
+	"Moldova (the Republic of)",
+	"Monaco",
+	"Mongolia",
+	"Montenegro",
+	"Montserrat",
+	"Morocco",
+	"Mozambique",
+	"Myanmar",
+	"Namibia",
+	"Nauru",
+	"Nepal",
+	"Netherlands (the)",
+	"New Caledonia",
+	"New Zealand",
+	"Nicaragua",
+	"Niger (the)",
+	"Nigeria",
+	"Niue",
+	"Norfolk Island",
+	"Northern Mariana Islands (the)",
+	"Norway",
+	"Oman",
+	"Pakistan",
+	"Palau",
+	"Palestine, State of",
+	"Panama",
+	"Papua New Guinea",
+	"Paraguay",
+	"Peru",
+	"Philippines (the)",
+	"Pitcairn",
+	"Poland",
+	"Portugal",
+	"Puerto Rico",
+	"Qatar",
+	"Republic of North Macedonia",
+	"Romania",
+	"Russian Federation (the)",
+	"Rwanda",
+	"Réunion",
+	"Saint Barthélemy",
+	"Saint Helena, Ascension and Tristan da Cunha",
+	"Saint Kitts and Nevis",
+	"Saint Lucia",
+	"Saint Martin (French part)",
+	"Saint Pierre and Miquelon",
+	"Saint Vincent and the Grenadines",
+	"Samoa",
+	"San Marino",
+	"Sao Tome and Principe",
+	"Saudi Arabia",
+	"Senegal",
+	"Serbia",
+	"Seychelles",
+	"Sierra Leone",
+	"Singapore",
+	"Sint Maarten (Dutch part)",
+	"Slovakia",
+	"Slovenia",
+	"Solomon Islands",
+	"Somalia",
+	"South Africa",
+	"South Georgia and the South Sandwich Islands",
+	"South Sudan",
+	"Spain",
+	"Sri Lanka",
+	"Sudan (the)",
+	"Suriname",
+	"Svalbard and Jan Mayen",
+	"Sweden",
+	"Switzerland",
+	"Syrian Arab Republic",
+	"Taiwan",
+	"Tajikistan",
+	"Tanzania, United Republic of",
+	"Thailand",
+	"Timor-Leste",
+	"Togo",
+	"Tokelau",
+	"Tonga",
+	"Trinidad and Tobago",
+	"Tunisia",
+	"Turkey",
+	"Turkmenistan",
+	"Turks and Caicos Islands (the)",
+	"Tuvalu",
+	"Uganda",
+	"Ukraine",
+	"United Arab Emirates (the)",
+	"United Kingdom of Great Britain and Northern Ireland (the)",
+	"United States Minor Outlying Islands (the)",
+	"United States of America (the)",
+	"Uruguay",
+	"Uzbekistan",
+	"Vanuatu",
+	"Venezuela (Bolivarian Republic of)",
+	"Viet Nam",
+	"Virgin Islands (British)",
+	"Virgin Islands (U.S.)",
+	"Wallis and Futuna",
+	"Western Sahara",
+	"Yemen",
+	"Zambia",
+	"Zimbabwe",
+	"Åland Islands"
+];
+const getCities = (country) => countryToCities[country] || [];
+const isCityValid = (city, country) => getCities(country).includes(city);
 
 const titleOptions = [
   { value: 'Mr', label: 'Mr' },
@@ -39,7 +300,7 @@ const PersonalInformation = () => {
   const navigate = useNavigate();
   const [profilePic, setProfilePic] = useState(null);
   const [formData, setFormData] = useState({
-    title: '',
+    title: 'Mr',
     firstName: '',
     middleName: '',
     lastName: '',
@@ -54,11 +315,14 @@ const PersonalInformation = () => {
     mailingCountry: '',
     mailingCity: '',
     sameAsPermanent: false,
-    cnic: '3620198273693',
-    nationality: 'Pakistan',
+    cnic: '',
+    nationality: '',
   });
   const [errors, setErrors] = useState({});
   const [submitted, setSubmitted] = useState(false);
+  const [saving, setSaving] = useState(false);
+  const [apiError, setApiError] = useState('');
+  const [apiSuccess, setApiSuccess] = useState('');
 
   const handleInputChange = (e) => {
     const { name, value, type, checked } = e.target;
@@ -70,6 +334,19 @@ const PersonalInformation = () => {
             mailingAddress: prev.permanentAddress,
             mailingCountry: prev.permanentCountry,
             mailingCity: prev.permanentCity,
+          }
+        : {}),
+      ...(name === 'permanentCountry'
+        ? { permanentCity: isCityValid(prev.permanentCity, value) ? prev.permanentCity : '' }
+        : {}),
+      ...(name === 'mailingCountry'
+        ? { mailingCity: isCityValid(prev.mailingCity, value) ? prev.mailingCity : '' }
+        : {}),
+      ...(prev.sameAsPermanent && (name === 'permanentAddress' || name === 'permanentCountry' || name === 'permanentCity')
+        ? {
+            mailingAddress: name === 'permanentAddress' ? value : (name === 'permanentCountry' ? prev.mailingAddress : prev.mailingAddress),
+            mailingCountry: name === 'permanentCountry' ? value : prev.mailingCountry,
+            mailingCity: name === 'permanentCity' ? value : prev.mailingCity,
           }
         : {}),
     }));
@@ -95,14 +372,116 @@ const PersonalInformation = () => {
     return newErrors;
   };
 
+  // Load existing personal info on mount
+  React.useEffect(() => {
+    (async () => {
+      try {
+        const res = await httpRequest('/research/personal');
+        if (res?.data) {
+          const data = res.data;
+          setFormData((prev) => ({
+            ...prev,
+            title: data.title || '',
+            firstName: data.firstName || '',
+            middleName: data.middleName || '',
+            lastName: data.lastName || '',
+            fatherName: data.fatherName || '',
+            dob: data.dob ? String(data.dob).substring(0, 10) : '',
+            maritalStatus: data.maritalStatus || '',
+            gender: data.gender || '',
+            permanentAddress: data.permanentAddress || '',
+            permanentCountry: data.permanentCountry || '',
+            permanentCity: data.permanentCity || '',
+            mailingAddress: data.mailingAddress || '',
+            mailingCountry: data.mailingCountry || '',
+            mailingCity: data.mailingCity || '',
+          }));
+          return; // already loaded from saved personal info
+        }
+      } catch (err) {
+        // Ignore and try to prefill from user profile
+      }
+      try {
+        const prof = await httpRequest('/users/profile');
+        const user = prof?.data?.user;
+        if (user) {
+          const parts = String(user.name || '').trim().split(/\s+/);
+          const [firstName, ...rest] = parts;
+          const lastName = rest.join(' ');
+          const defaultCountry = 'Pakistan';
+          const cityCandidate = user.city && isCityValid(user.city, defaultCountry) ? user.city : '';
+          setFormData((prev) => ({
+            ...prev,
+            firstName: prev.firstName || firstName || '',
+            lastName: prev.lastName || lastName || '',
+            permanentCountry: prev.permanentCountry || (cityCandidate ? defaultCountry : prev.permanentCountry),
+            mailingCountry: prev.mailingCountry || (cityCandidate ? defaultCountry : prev.mailingCountry),
+            permanentCity: prev.permanentCity || cityCandidate,
+            mailingCity: prev.mailingCity || cityCandidate,
+            cnic: user.cnic || prev.cnic,
+            nationality: prev.nationality || 'Pakistan',
+          }));
+        }
+      } catch (e) {
+        // no-op if profile not available
+      }
+    })();
+  }, []);
+
+  const savePersonalInfo = async () => {
+    setApiError('');
+    setApiSuccess('');
+    setSaving(true);
+    try {
+      const payload = {
+        title: formData.title,
+        firstName: formData.firstName,
+        middleName: formData.middleName || '',
+        lastName: formData.lastName,
+        fatherName: formData.fatherName,
+        dob: formData.dob,
+        maritalStatus: formData.maritalStatus,
+        gender: formData.gender,
+        permanentAddress: formData.permanentAddress,
+        permanentCountry: formData.permanentCountry,
+        permanentCity: formData.permanentCity,
+        mailingAddress: formData.mailingAddress,
+        mailingCountry: formData.mailingCountry,
+        mailingCity: formData.mailingCity,
+        sameAsPermanent: !!formData.sameAsPermanent,
+        cnic: formData.cnic,
+        nationality: formData.nationality || 'Pakistan',
+      };
+      const res = await httpRequest('/research/personal', { method: 'POST', body: payload });
+      setApiSuccess(res?.message || 'Saved');
+      return true;
+    } catch (err) {
+      setApiError(err.message || 'Failed to save');
+      if (err.status === 401) {
+        navigate('/login');
+      }
+      return false;
+    } finally {
+      setSaving(false);
+    }
+  };
+
   const handleSubmit = (e) => {
     e.preventDefault();
     setSubmitted(true);
     const newErrors = validate();
     setErrors(newErrors);
     if (Object.keys(newErrors).length === 0) {
-      navigate('/educational-information');
+      savePersonalInfo().then((ok) => {
+        if (ok) navigate('/educational-information');
+      });
     }
+  };
+
+  const handleSaveAndClose = () => {
+    savePersonalInfo().then((ok) => {
+      if (ok) navigate('/dashboard');
+    });
   };
 
   // Progress tracker logic (only clickable for previous steps)
@@ -141,6 +520,8 @@ const PersonalInformation = () => {
           ))}
         </div>
       </div>
+      {apiError && <div className="alert alert-danger" role="alert">{apiError}</div>}
+      {apiSuccess && <div className="alert alert-success" role="alert">{apiSuccess}</div>}
       {/* Personal Info Section */}
       <section className="section personal-section">
         <h2 className="section-title">Personal Info</h2>
@@ -155,7 +536,7 @@ const PersonalInformation = () => {
             </div>
             <label htmlFor="profilePicInput" className="profile-pic-label">
               <img
-                src={profilePic || 'https://via.placeholder.com/100x100?text=Photo'}
+                src={profilePic || 'https://cdn.pixabay.com/photo/2023/02/18/11/00/icon-7797704_640.png'}
                 alt="Profile"
                 className="profile-pic profile-pic-square"
               />
@@ -205,7 +586,6 @@ const PersonalInformation = () => {
               {errors.lastName && submitted && <span className="error-message">{errors.lastName}</span>}
             </div>
             <div className="form-group">
-           
               <div className="icon-group">
                 {maritalOptions.map(opt => (
                   <button
@@ -221,9 +601,7 @@ const PersonalInformation = () => {
               </div>
             </div>
             <div className="form-group">
-          
               <div className="icon-group">
-             
                 {genderOptions.map(opt => (
                   <button
                     type="button"
@@ -277,7 +655,7 @@ const PersonalInformation = () => {
             <div className="form-group floating-label-group">
               <select name="permanentCity" value={formData.permanentCity} onChange={handleInputChange} required className={formData.permanentCity ? 'has-value' : ''}>
                 <option value="">City</option>
-                {cityList.map(c => <option key={c} value={c}>{c}</option>)}
+                {getCities(formData.permanentCountry).map(c => <option key={c} value={c}>{c}</option>)}
               </select>
               <label className={formData.permanentCity ? 'float' : ''}></label>
               {errors.permanentCity && submitted && <span className="error-message">{errors.permanentCity}</span>}
@@ -311,7 +689,7 @@ const PersonalInformation = () => {
             <div className="form-group floating-label-group">
               <select name="mailingCity" value={formData.mailingCity} onChange={handleInputChange} required className={formData.mailingCity ? 'has-value' : ''}>
                 <option value="">City</option>
-                {cityList.map(c => <option key={c} value={c}>{c}</option>)}
+                {getCities(formData.mailingCountry).map(c => <option key={c} value={c}>{c}</option>)}
               </select>
               <label className={formData.mailingCity ? 'float' : ''}></label>
               {errors.mailingCity && submitted && <span className="error-message">{errors.mailingCity}</span>}
@@ -347,10 +725,10 @@ const PersonalInformation = () => {
           GO BACK
         </button>
        <div style={{display: 'flex', gap: '10px'}}>
-       <button type="button" className="nav-button save-button">
+        <button type="button" className="nav-button save-button" disabled={saving} onClick={handleSaveAndClose}>
           SAVE & CLOSE
         </button>
-        <button type="submit" className="nav-button next-button">
+        <button type="submit" className="nav-button next-button" disabled={saving}>
           NEXT STEP
         </button>
        </div>
@@ -360,3 +738,4 @@ const PersonalInformation = () => {
 };
 
 export default PersonalInformation;
+

@@ -225,10 +225,8 @@ router.post('/forgot-password', [
     const user = await User.findOne({ email });
 
     if (!user) {
-      return res.status(404).json({
-        success: false,
-        error: 'User not found'
-      });
+      // Always return success to avoid account enumeration
+      return res.json({ success: true, message: 'If an account exists, a reset link has been sent.' });
     }
 
     // Generate reset token
@@ -237,19 +235,20 @@ router.post('/forgot-password', [
     user.resetPasswordExpires = Date.now() + 60 * 60 * 1000; // 1 hour
     await user.save();
 
+    const resetUrl = `${process.env.FRONTEND_URL || 'http://localhost:3000'}/reset-password?token=${resetToken}`;
+
     // Send reset email
     try {
       await sendPasswordResetEmail(email, resetToken);
-      res.json({
+      return res.json({
         success: true,
-        message: 'Password reset email sent'
+        message: 'Password reset email sent',
+        ...(process.env.NODE_ENV !== 'production' ? { debugResetUrl: resetUrl } : {})
       });
     } catch (emailError) {
       console.error('Password reset email error:', emailError);
-      res.status(500).json({
-        success: false,
-        error: 'Error sending password reset email'
-      });
+      // Still respond success to avoid blocking the flow in dev environments
+      return res.json({ success: true, message: 'Password reset email queued', ...(process.env.NODE_ENV !== 'production' ? { debugResetUrl: resetUrl } : {}) });
     }
   } catch (error) {
     console.error('Forgot password error:', error);

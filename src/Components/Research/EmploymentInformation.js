@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { FaArrowLeft, FaExclamationCircle, FaCheck, FaPlus, FaChevronDown, FaChevronUp, FaGraduationCap } from 'react-icons/fa';
 import { useNavigate } from 'react-router-dom';
 import './EmploymentInformation.css';
+import { countryList, getCities } from '../../constants/locations.js';
 
 const EmploymentInformation = () => {
   const navigate = useNavigate();
@@ -196,9 +197,7 @@ const EmploymentInformation = () => {
                         <label>Country <span className="required">*</span></label>
                         <select name="country" value={employmentData.country} onChange={handleChange}>
                           <option value="">Select Country</option>
-                          <option value="Pakistan">Pakistan</option>
-                          <option value="USA">USA</option>
-                          <option value="UK">UK</option>
+                          {countryList.map(c => (<option key={c} value={c}>{c}</option>))}
                         </select>
               </div>
               <div className="form-group">
@@ -273,18 +272,14 @@ const EmploymentInformation = () => {
                         <label>Country <span className="required">*</span></label>
                         <select name="addressCountry" value={employmentData.addressCountry} onChange={handleChange}>
                           <option value="">Select Country</option>
-                          <option value="Pakistan">Pakistan</option>
-                          <option value="USA">USA</option>
-                          <option value="UK">UK</option>
+                          {countryList.map(c => (<option key={c} value={c}>{c}</option>))}
                         </select>
                       </div>
                       <div className="form-group">
                         <label>City <span className="required">*</span></label>
                         <select name="addressCity" value={employmentData.addressCity} onChange={handleChange}>
                           <option value="">Select City</option>
-                          <option value="Karachi">Karachi</option>
-                          <option value="Lahore">Lahore</option>
-                          <option value="Islamabad">Islamabad</option>
+                          {getCities(employmentData.addressCountry).map(c => (<option key={c} value={c}>{c}</option>))}
                         </select>
                       </div>
                     </div>
