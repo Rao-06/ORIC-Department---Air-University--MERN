@@ -36,7 +36,7 @@ const Login = ({ onLogin }) => {
   };
 
   return (
-    <div className="login-container">
+    <div className="login-container" style={{ background: 'radial-gradient(circle at center, #93cfff 0%, #219dff 100%)', minHeight: '100vh' }}>
      <div className="container">
     <div className="card flex-row w-100 h-100">
           <div className="form-section d-flex flex-column justify-content-center align-items-center " style={{ flex: 1}}>

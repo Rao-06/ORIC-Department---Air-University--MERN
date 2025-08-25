@@ -12,6 +12,9 @@ const EmploymentInformation = () => {
   // Wizard section control (-1 closed, otherwise 0..2)
   const [activeSectionIndex, setActiveSectionIndex] = useState(0);
 
+  // Validation state
+  const [validationErrors, setValidationErrors] = useState({});
+
   // Aggregate employment form data
   const [employmentData, setEmploymentData] = useState({
     // Section 1 - Employment Details
@@ -48,11 +51,93 @@ const EmploymentInformation = () => {
     jobDescription: ''
   });
 
+  // Validation functions
+  const validateField = (name, value) => {
+    const errors = {};
+    
+    if (name === 'country' && !value) {
+      errors.country = 'Country is required';
+    }
+    if (name === 'sector' && !value) {
+      errors.sector = 'Sector is required';
+    }
+    if (name === 'category' && !value) {
+      errors.category = 'Category is required';
+    }
+    if (name === 'employerName' && !value) {
+      errors.employerName = 'Employer Name is required';
+    }
+    if (name === 'addressCountry' && !value) {
+      errors.addressCountry = 'Address Country is required';
+    }
+    if (name === 'addressCity' && !value) {
+      errors.addressCity = 'Address City is required';
+    }
+    if (name === 'jobType' && !value) {
+      errors.jobType = 'Job Type is required';
+    }
+    if (name === 'jobTitle' && !value) {
+      errors.jobTitle = 'Job Title is required';
+    }
+    if (name === 'fieldOfWork' && !value) {
+      errors.fieldOfWork = 'Field of Work is required';
+    }
+    if (name === 'careerLevel' && !value) {
+      errors.careerLevel = 'Career Level is required';
+    }
+    if (name === 'startDate' && !value) {
+      errors.startDate = 'Start Date is required';
+    }
+    if (name === 'endDate' && !value && !employmentData.currentlyWorking) {
+      errors.endDate = 'End Date is required unless currently working';
+    }
+    
+    return errors;
+  };
+
+  const isSectionComplete = (sectionIndex) => {
+    switch (sectionIndex) {
+      case 0: // Employment Details
+        return employmentData.country && employmentData.sector && employmentData.category && employmentData.employerName;
+      case 1: // Employment Address Details
+        return employmentData.addressCountry && employmentData.addressCity;
+      case 2: // Job Details
+        return employmentData.jobType && employmentData.jobTitle && employmentData.fieldOfWork && 
+               employmentData.careerLevel && employmentData.startDate && 
+               (employmentData.currentlyWorking || employmentData.endDate);
+      default:
+        return false;
+    }
+  };
+
+  const isFieldDisabled = (fieldName) => {
+    // Section 1 fields are always enabled
+    if (['country', 'sector', 'category', 'employerName', 'organizationType'].includes(fieldName)) {
+      return false;
+    }
+    
+    // Section 2 fields require Section 1 to be complete
+    if (['addressCountry', 'addressCity', 'addressLine', 'contactCountryCode', 'contactNumber', 'officeEmail', 'website'].includes(fieldName)) {
+      return !isSectionComplete(0);
+    }
+    
+    // Section 3 fields require Section 2 to be complete
+    if (['jobType', 'jobTitle', 'fieldOfWork', 'careerLevel', 'startDate', 'endDate', 'currentlyWorking', 'jobDescription'].includes(fieldName)) {
+      return !isSectionComplete(1);
+    }
+    
+    return false;
+  };
+
+
+
   const handleChange = (e) => {
     const { name, type, value, checked } = e.target;
+    
+    // Update the data
     setEmploymentData((prev) => {
       const nextState = {
-      ...prev,
+        ...prev,
         [name]: type === 'checkbox' ? checked : value
       };
       if (name === 'organizationType' && value === 'PROFESSIONAL') {
@@ -60,6 +145,21 @@ const EmploymentInformation = () => {
       }
       return nextState;
     });
+    
+    // Clear validation error for this field
+    if (validationErrors[name]) {
+      setValidationErrors(prev => {
+        const newErrors = { ...prev };
+        delete newErrors[name];
+        return newErrors;
+      });
+    }
+    
+    // Validate the field
+    const fieldErrors = validateField(name, type === 'checkbox' ? checked : value);
+    if (Object.keys(fieldErrors).length > 0) {
+      setValidationErrors(prev => ({ ...prev, ...fieldErrors }));
+    }
   };
 
   const gotoNextSection = () => setActiveSectionIndex((prev) => (prev < 0 ? 0 : Math.min(prev + 1, 2)));
@@ -195,51 +295,81 @@ const EmploymentInformation = () => {
             <div className="form-row">
               <div className="form-group">
                         <label>Country <span className="required">*</span></label>
-                        <select name="country" value={employmentData.country} onChange={handleChange}>
+                        <select 
+                          name="country" 
+                          value={employmentData.country} 
+                          onChange={handleChange}
+                          className={validationErrors.country ? 'error' : ''}
+                        >
                           <option value="">Select Country</option>
                           <option value="Pakistan">Pakistan</option>
                           <option value="USA">USA</option>
                           <option value="UK">UK</option>
                         </select>
+                        {validationErrors.country && <span className="error-message">{validationErrors.country}</span>}
               </div>
               <div className="form-group">
                         <label>Sector <span className="required">*</span></label>
-                        <select name="sector" value={employmentData.sector} onChange={handleChange}>
+                        <select 
+                          name="sector" 
+                          value={employmentData.sector} 
+                          onChange={handleChange}
+                          className={validationErrors.sector ? 'error' : ''}
+                        >
                           <option value="">Select Sector</option>
                           <option value="Public">Public</option>
                           <option value="Private">Private</option>
                           <option value="Government">Government</option>
                         </select>
+                        {validationErrors.sector && <span className="error-message">{validationErrors.sector}</span>}
               </div>
             </div>
             <div className="form-row">
               <div className="form-group">
                         <label>Category <span className="required">*</span></label>
-                        <select name="category" value={employmentData.category} onChange={handleChange}>
+                        <select 
+                          name="category" 
+                          value={employmentData.category} 
+                          onChange={handleChange}
+                          className={validationErrors.category ? 'error' : ''}
+                        >
                           <option value="">Select Category</option>
                           <option value="University">University</option>
                           <option value="Institute">Institute</option>
                           <option value="Company">Company</option>
                         </select>
+                        {validationErrors.category && <span className="error-message">{validationErrors.category}</span>}
                       </div>
                       <div className="form-group">
                         <label>Employer Name <span className="required">*</span></label>
-                        <select name="employerName" value={employmentData.employerName} onChange={handleChange}>
+                        <select 
+                          name="employerName" 
+                          value={employmentData.employerName} 
+                          onChange={handleChange}
+                          className={validationErrors.employerName ? 'error' : ''}
+                        >
                           <option value="">Select Employer</option>
                           <option value="Example Employer 1">Example Employer 1</option>
                           <option value="Example Employer 2">Example Employer 2</option>
                         </select>
+                        {validationErrors.employerName && <span className="error-message">{validationErrors.employerName}</span>}
                       </div>
                     </div>
                     {employmentData.organizationType === 'ACADEMIC' && (
                       <div className="form-row">
                         <div className="form-group" style={{ flex: 1 }}>
                           <label>Select Centers</label>
-                          <select name="centers" value={employmentData.centers} onChange={handleChange}>
+                          <select 
+                            name="centers" 
+                            value={employmentData.centers} 
+                            onChange={handleChange}
+                            disabled={!isSectionComplete(0)}
+                          >
                             <option value="">Select Centers</option>
                             <option value="Center A">Center A</option>
                             <option value="Center B">Center B</option>
                           </select>
+
                         </div>
                       </div>
                     )}
@@ -250,7 +380,16 @@ const EmploymentInformation = () => {
                         Back
                       </button>
                       <div style={{ display: 'flex', gap: '10px' }}>
-                        <button type="button" className="nav-button next-button" onClick={gotoNextSection}>
+                        <button 
+                          type="button" 
+                          className="nav-button next-button" 
+                          onClick={gotoNextSection}
+                          disabled={!isSectionComplete(0)}
+                          style={{ 
+                            opacity: isSectionComplete(0) ? 1 : 0.6,
+                            cursor: isSectionComplete(0) ? 'pointer' : 'not-allowed'
+                          }}
+                        >
                           Next
                         </button>
                       </div>
@@ -270,37 +409,71 @@ const EmploymentInformation = () => {
                     <div className="form-row">
                       <div className="form-group">
                         <label>Country <span className="required">*</span></label>
-                        <select name="addressCountry" value={employmentData.addressCountry} onChange={handleChange}>
+                        <select 
+                          name="addressCountry" 
+                          value={employmentData.addressCountry} 
+                          onChange={handleChange}
+                          disabled={!isSectionComplete(0)}
+                          className={validationErrors.addressCountry ? 'error' : ''}
+                        >
                           <option value="">Select Country</option>
                           <option value="Pakistan">Pakistan</option>
                           <option value="USA">USA</option>
                           <option value="UK">UK</option>
                         </select>
+                        {validationErrors.addressCountry && <span className="error-message">{validationErrors.addressCountry}</span>}
                       </div>
                       <div className="form-group">
                         <label>City <span className="required">*</span></label>
-                        <select name="addressCity" value={employmentData.addressCity} onChange={handleChange}>
+                        <select 
+                          name="addressCity" 
+                          value={employmentData.addressCity} 
+                          onChange={handleChange}
+                          disabled={!isSectionComplete(0)}
+                          className={validationErrors.addressCity ? 'error' : ''}
+                        >
                           <option value="">Select City</option>
                           <option value="Karachi">Karachi</option>
                           <option value="Lahore">Lahore</option>
                           <option value="Islamabad">Islamabad</option>
                         </select>
+                        {validationErrors.addressCity && <span className="error-message">{validationErrors.addressCity}</span>}
                       </div>
                     </div>
                     <div className="form-row">
                       <div className="form-group" style={{ flex: 2 }}>
                         <label>Address</label>
-                        <input name="addressLine" type="text" value={employmentData.addressLine} onChange={handleChange} placeholder="Street, Area, Building" />
+                        <input 
+                          name="addressLine" 
+                          type="text" 
+                          value={employmentData.addressLine} 
+                          onChange={handleChange} 
+                          placeholder="Street, Area, Building"
+                          disabled={!isSectionComplete(0)}
+                        />
                       </div>
                       <div className="form-group" style={{ flex: 2 }}>
                         <label>Contact Number</label>
                         <div style={{ display: 'flex', gap: '8px' }}>
-                          <select name="contactCountryCode" value={employmentData.contactCountryCode} onChange={handleChange} style={{ maxWidth: '100px' }}>
+                          <select 
+                            name="contactCountryCode" 
+                            value={employmentData.contactCountryCode} 
+                            onChange={handleChange} 
+                            style={{ maxWidth: '100px' }}
+                            disabled={!isSectionComplete(0)}
+                          >
                             <option value="+92">+92</option>
                             <option value="+1">+1</option>
                             <option value="+44">+44</option>
                           </select>
-                          <input name="contactNumber" type="tel" value={employmentData.contactNumber} onChange={handleChange} placeholder="21 23456789" />
+                          <input 
+                            name="contactNumber" 
+                            type="tel" 
+                            value={employmentData.contactNumber} 
+                            onChange={handleChange} 
+                            placeholder="21 23456789"
+                            disabled={!isSectionComplete(0)}
+                          />
                         </div>
                         <small style={{ color: '#6b7280' }}>Please Enter Cell No. in correct format e.g.: +92 3472748202</small>
                       </div>
@@ -308,11 +481,25 @@ const EmploymentInformation = () => {
                     <div className="form-row">
                       <div className="form-group" style={{ flex: 2 }}>
                         <label>Office Email</label>
-                        <input name="officeEmail" type="email" value={employmentData.officeEmail} onChange={handleChange} placeholder="name@company.com" />
+                        <input 
+                          name="officeEmail" 
+                          type="email" 
+                          value={employmentData.officeEmail} 
+                          onChange={handleChange} 
+                          placeholder="name@company.com"
+                          disabled={!isSectionComplete(0)}
+                        />
                       </div>
-                      <div className="form-group" style={{ flex: 2 }}>
+                      <div className="form-group" style={{ flex: 0 }}>
                         <label>Website</label>
-                        <input name="website" type="url" value={employmentData.website} onChange={handleChange} placeholder="https://example.com" />
+                        <input 
+                          name="website" 
+                          type="url" 
+                          value={employmentData.website} 
+                          onChange={handleChange} 
+                          placeholder="https://example.com"
+                          disabled={!isSectionComplete(0)}
+                        />
                       </div>
                     </div>
 
@@ -322,7 +509,16 @@ const EmploymentInformation = () => {
                         Back
                       </button>
                       <div style={{ display: 'flex', gap: '10px' }}>
-                        <button type="button" className="nav-button next-button" onClick={gotoNextSection}>
+                        <button 
+                          type="button" 
+                          className="nav-button next-button" 
+                          onClick={gotoNextSection}
+                          disabled={!isSectionComplete(1)}
+                          style={{ 
+                            opacity: isSectionComplete(1) ? 1 : 0.6,
+                            cursor: isSectionComplete(1) ? 'pointer' : 'not-allowed'
+                          }}
+                        >
                           Next
                         </button>
                       </div>
@@ -342,61 +538,121 @@ const EmploymentInformation = () => {
                     <div className="form-row">
                       <div className="form-group">
                         <label>Job Type <span className="required">*</span></label>
-                        <select name="jobType" value={employmentData.jobType} onChange={handleChange}>
+                        <select 
+                          name="jobType" 
+                          value={employmentData.jobType} 
+                          onChange={handleChange}
+                          disabled={!isSectionComplete(1)}
+                          className={validationErrors.jobType ? 'error' : ''}
+                        >
                           <option value="">Select</option>
                           <option value="Full-time">Full-time</option>
                           <option value="Part-time">Part-time</option>
                           <option value="Contract">Contract</option>
                           <option value="Internship">Internship</option>
                         </select>
+                        {validationErrors.jobType && <span className="error-message">{validationErrors.jobType}</span>}
                       </div>
                       <div className="form-group">
                         <label>Job Title/Designation <span className="required">*</span></label>
-                        <input name="jobTitle" type="text" value={employmentData.jobTitle} onChange={handleChange} placeholder="e.g., Assistant Professor" />
+                        <input 
+                          name="jobTitle" 
+                          type="text" 
+                          value={employmentData.jobTitle} 
+                          onChange={handleChange} 
+                          placeholder="e.g., Assistant Professor"
+                          disabled={!isSectionComplete(1)}
+                          className={validationErrors.jobTitle ? 'error' : ''}
+                        />
+                        {validationErrors.jobTitle && <span className="error-message">{validationErrors.jobTitle}</span>}
                       </div>
                     </div>
                     <div className="form-row">
                       <div className="form-group">
                         <label>Field Of Work <span className="required">*</span></label>
-                        <select name="fieldOfWork" value={employmentData.fieldOfWork} onChange={handleChange}>
+                        <select 
+                          name="fieldOfWork" 
+                          value={employmentData.fieldOfWork} 
+                          onChange={handleChange}
+                          disabled={!isSectionComplete(1)}
+                          className={validationErrors.fieldOfWork ? 'error' : ''}
+                        >
                           <option value="">Select</option>
                           <option value="Research">Research</option>
                           <option value="Teaching">Teaching</option>
                           <option value="Administration">Administration</option>
                           <option value="Engineering">Engineering</option>
                         </select>
+                        {validationErrors.fieldOfWork && <span className="error-message">{validationErrors.fieldOfWork}</span>}
                       </div>
                       <div className="form-group">
                         <label>Career Level <span className="required">*</span></label>
-                        <select name="careerLevel" value={employmentData.careerLevel} onChange={handleChange}>
+                        <select 
+                          name="careerLevel" 
+                          value={employmentData.careerLevel} 
+                          onChange={handleChange}
+                          disabled={!isSectionComplete(1)}
+                          className={validationErrors.careerLevel ? 'error' : ''}
+                        >
                           <option value="">Select</option>
                           <option value="Entry">Entry</option>
                           <option value="Mid">Mid</option>
                           <option value="Senior">Senior</option>
                           <option value="Lead">Lead</option>
                         </select>
+                        {validationErrors.careerLevel && <span className="error-message">{validationErrors.careerLevel}</span>}
                       </div>
                     </div>
                     <div className="form-row">
                       <div className="form-group">
                         <label>Start Date <span className="required">*</span></label>
-                        <input name="startDate" type="date" value={employmentData.startDate} onChange={handleChange} />
+                        <input 
+                          name="startDate" 
+                          type="date" 
+                          value={employmentData.startDate} 
+                          onChange={handleChange}
+                          disabled={!isSectionComplete(1)}
+                          className={validationErrors.startDate ? 'error' : ''}
+                        />
+                        {validationErrors.startDate && <span className="error-message">{validationErrors.startDate}</span>}
               </div>
               <div className="form-group">
                         <label>End Date <span className="required">*</span></label>
-                        <input name="endDate" type="date" value={employmentData.endDate} onChange={handleChange} disabled={employmentData.currentlyWorking} />
+                        <input 
+                          name="endDate" 
+                          type="date" 
+                          value={employmentData.endDate} 
+                          onChange={handleChange} 
+                          disabled={employmentData.currentlyWorking || !isSectionComplete(1)}
+                          className={validationErrors.endDate ? 'error' : ''}
+                        />
+                        {validationErrors.endDate && <span className="error-message">{validationErrors.endDate}</span>}
                       </div>
                     </div>
                     <div className="form-row">
                       <label className="checkbox-label">
-                        <input type="checkbox" name="currentlyWorking" checked={employmentData.currentlyWorking} onChange={handleChange} />
+                        <input 
+                          type="checkbox" 
+                          name="currentlyWorking" 
+                          checked={employmentData.currentlyWorking} 
+                          onChange={handleChange}
+                          disabled={!isSectionComplete(1)}
+                        />
                         Currently Working here?
                       </label>
+
                     </div>
                     <div className="form-row">
                       <div className="form-group" style={{ flex: 1 }}>
                         <label>Job Description</label>
-                        <textarea name="jobDescription" value={employmentData.jobDescription} onChange={handleChange} rows={4} placeholder="Describe your responsibilities" />
+                        <textarea 
+                          name="jobDescription" 
+                          value={employmentData.jobDescription} 
+                          onChange={handleChange} 
+                          rows={4} 
+                          placeholder="Describe your responsibilities"
+                          disabled={!isSectionComplete(1)}
+                        />
                       </div>
                     </div>
 
@@ -406,7 +662,16 @@ const EmploymentInformation = () => {
                         Back
                       </button>
                       <div style={{ display: 'flex', gap: '10px' }}>
-                        <button type="button" className="nav-button save-button" onClick={handleFinalNext}>
+                        <button 
+                          type="button" 
+                          className="nav-button save-button" 
+                          onClick={handleFinalNext}
+                          disabled={!isSectionComplete(2)}
+                          style={{ 
+                            opacity: isSectionComplete(2) ? 1 : 0.6,
+                            cursor: isSectionComplete(2) ? 'pointer' : 'not-allowed'
+                          }}
+                        >
                           Add
                         </button>
                       </div>
