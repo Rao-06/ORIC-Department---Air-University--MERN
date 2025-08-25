@@ -1,12 +1,14 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Link, useNavigate, Outlet } from 'react-router-dom';
 import { Nav, NavDropdown, Button } from 'react-bootstrap';
-import { FaUser, FaSignOutAlt, FaHome, FaFlask, FaFileAlt, FaBars, FaTimes } from 'react-icons/fa';
+import { FaUser, FaSignOutAlt, FaHome, FaFlask, FaFileAlt, FaBars, FaTimes, FaCaretUp } from 'react-icons/fa';
 import './Layout.css';
 
 const Layout = ({ user, onLogout }) => {
   const navigate = useNavigate();
   const [sidebarOpen, setSidebarOpen] = useState(true);
+  const [profileDropdownOpen, setProfileDropdownOpen] = useState(false);
+  const profileDropdownRef = useRef(null);
 
   const handleLogout = () => {
     onLogout();
@@ -17,6 +19,32 @@ const Layout = ({ user, onLogout }) => {
     setSidebarOpen(!sidebarOpen);
   };
 
+  const toggleProfileDropdown = () => {
+    setProfileDropdownOpen(!profileDropdownOpen);
+  };
+
+  const handleProfileClick = () => {
+    setProfileDropdownOpen(false);
+    navigate('/profile');
+  };
+
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (profileDropdownRef.current && !profileDropdownRef.current.contains(event.target)) {
+        setProfileDropdownOpen(false);
+      }
+    };
+
+    if (profileDropdownOpen) {
+      document.addEventListener('mousedown', handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [profileDropdownOpen]);
+
   return (
     <div className="layout">
       {/* Top Header */}
@@ -24,20 +52,50 @@ const Layout = ({ user, onLogout }) => {
         <div className="header-left">
           <div className="logo-section">
             <div className="logo-circle">AU</div>
-            <span className="logo-text">Air GPMS</span>
+            <span className="logo-text">Admin Panel</span>
           </div>
           <button className="menu-toggle" onClick={toggleSidebar}>
             {sidebarOpen ? <FaTimes /> : <FaBars />}
           </button>
         </div>
+       
         <div className="header-right">
-          <Button 
-            variant="outline-light" 
-            onClick={handleLogout}
-            className="logout-btn"
-          >
-            Logout
-          </Button>
+        <div className="header-center">
+          <span className="greeting">Hi, {user?.name || 'User'}</span>
+        </div>
+          <div className="profile-dropdown-container" ref={profileDropdownRef}>
+            <div className="user-icon-container" onClick={toggleProfileDropdown}>
+              <FaUser className="user-icon" />
+              <FaCaretUp className={`dropdown-arrow ${profileDropdownOpen ? 'open' : ''}`} />
+            </div>
+            
+            {profileDropdownOpen && (
+              <div className="profile-dropdown">
+                <div className="profile-header">
+                  <FaUser className="profile-avatar" />
+                  <div className="profile-info">
+                    <div className="profile-name">{user?.name || 'User Name'}</div>
+                    <div className="profile-email">{user?.email || 'user@example.com'}</div>
+                  </div>
+                </div>
+                <div className="profile-menu">
+                  <div className="menu-item" onClick={handleProfileClick}>
+                    <FaUser className="menu-icon" />
+                    <div className="menu-text">
+                      <div className="menu-title">My Profile</div>
+                      <div className="menu-subtitle">Account settings and more</div>
+                    </div>
+                  </div>
+                  <div className="menu-item logout-item" onClick={handleLogout}>
+                    <FaSignOutAlt className="menu-icon logout-icon" />
+                    <div className="menu-text">
+                      <div className="menu-title logout-text">Logout</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
+          </div>
         </div>
       </div>
 
