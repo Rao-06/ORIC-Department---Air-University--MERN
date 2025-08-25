@@ -1,9 +1,10 @@
-import React, { useRef, useState } from 'react';
+import React, { useRef, useState, useEffect } from 'react';
 import Select from 'react-select';
 import { FaArrowLeft, FaEdit, FaMale, FaFemale, FaTransgender, FaUser, FaUserFriends, FaHeartBroken, FaCalendarAlt, FaCheck, FaPencilAlt, FaExclamationCircle } from 'react-icons/fa';
 import { useNavigate } from 'react-router-dom';
 import './PersonalInformation.css';
 import defaultAvatar from '../../Assets/profilepic.png';
+import airlogo from '../../Assets/airlogo.png';
 
 const maritalOptions = [
   { value: 'single', label: 'Single', icon: <FaUser /> },
@@ -38,6 +39,11 @@ const requiredFields = [
 
 const PersonalInformation = () => {
   const navigate = useNavigate();
+  const [isPageLoading, setIsPageLoading] = useState(true);
+  useEffect(() => {
+    const t = setTimeout(() => setIsPageLoading(false), 900);
+    return () => clearTimeout(t);
+  }, []);
   const [profilePic, setProfilePic] = useState(null);
   const titleValidityRef = useRef(null);
   const [formData, setFormData] = useState({
@@ -128,6 +134,13 @@ const PersonalInformation = () => {
 
   return (
     <form className="personal-info-form" onSubmit={handleSubmit}>
+      {isPageLoading && (
+        <div className="full-screen-loader" role="status" aria-live="polite">
+          <div className="loader-side left"><span></span><span></span><span></span></div>
+          <img src={airlogo} alt="Air University" className="loader-logo" />
+          <div className="loader-side right"><span></span><span></span><span></span></div>
+        </div>
+      )}
       {/* Modern Note and Progress Tracker Card */}
       <div className="progress-tracker-card">
         <div className="important-note modern-note">

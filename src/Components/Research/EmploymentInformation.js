@@ -1,10 +1,16 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { FaArrowLeft, FaExclamationCircle, FaCheck, FaPlus, FaChevronDown, FaChevronUp, FaGraduationCap } from 'react-icons/fa';
 import { useNavigate } from 'react-router-dom';
 import './EmploymentInformation.css';
+import airlogo from '../../Assets/airlogo.png';
 
 const EmploymentInformation = () => {
   const navigate = useNavigate();
+  const [isPageLoading, setIsPageLoading] = useState(true);
+  useEffect(() => {
+    const t = setTimeout(() => setIsPageLoading(false), 900);
+    return () => clearTimeout(t);
+  }, []);
 
   // Empty-state vs wizard visibility
   const [showEmploymentWizard, setShowEmploymentWizard] = useState(false);
@@ -200,6 +206,13 @@ const EmploymentInformation = () => {
 
   return (
     <div className="application-form-container">
+      {isPageLoading && (
+        <div className="full-screen-loader" role="status" aria-live="polite">
+          <div className="loader-side left"><span></span><span></span><span></span></div>
+          <img src={airlogo} alt="Air University" className="loader-logo" />
+          <div className="loader-side right"><span></span><span></span><span></span></div>
+        </div>
+      )}
       {/* Header */}
       <div className="application-header">
         <h1 className="application-title">Application Form</h1>

@@ -1,3 +1,33 @@
+/* Reuse full-screen loader styles from research form */
+.full-screen-loader {
+  position: fixed;
+  inset: 0;
+  background: rgba(255,255,255,0.9);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 24px;
+  z-index: 2000;
+}
+
+.loader-logo {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  object-fit: contain;
+  box-shadow: 0 4px 14px rgba(0,0,0,0.12);
+  background: white;
+  padding: 4px;
+}
+
+.loader-side { display: flex; align-items: center; gap: 6px; }
+.loader-side span { width: 10px; height: 10px; border-radius: 50%; background: linear-gradient(135deg,#007bff,#0056b3); animation: pulse 1s ease-in-out infinite; }
+.loader-side.left span:nth-child(2){ animation-delay:.12s }
+.loader-side.left span:nth-child(3){ animation-delay:.24s }
+.loader-side.right span:nth-child(1){ animation-delay:.24s }
+.loader-side.right span:nth-child(2){ animation-delay:.12s }
+
+@keyframes pulse { 0%,100%{ transform:scale(.7); opacity:.5 } 50%{ transform:scale(1); opacity:1 } }
 html, body {
   height: 100%;
   min-height: 650px;

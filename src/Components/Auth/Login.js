@@ -11,6 +11,7 @@ const Login = ({ onLogin }) => {
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [showPassword, setShowPassword] = useState(false);
+  const [isLoggingIn, setIsLoggingIn] = useState(false);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -32,11 +33,14 @@ const Login = ({ onLogin }) => {
     };
     
     onLogin(userData);
-    navigate('/dashboard');
+    setIsLoggingIn(true);
+    setTimeout(() => {
+      navigate('/dashboard');
+    }, 1200);
   };
 
   return (
-    <div className="login-container" style={{ background: 'radial-gradient(circle at center, #93cfff 0%, #219dff 100%)', minHeight: '100vh' }}>
+    <div className="login-container" style={{ background: 'radial-gradient(circle at center, #93cfff 0%, #219dff 100%)', minHeight: '100vh', position: 'relative' }}>
      <div className="container">
     <div className="card flex-row w-100 h-100">
           <div className="form-section d-flex flex-column justify-content-center align-items-center " style={{ flex: 1}}>
@@ -107,6 +111,13 @@ const Login = ({ onLogin }) => {
           </div>
         </div>
       </div>
+      {isLoggingIn && (
+        <div className="full-screen-loader" role="status" aria-live="polite">
+          <div className="loader-side left"><span></span><span></span><span></span></div>
+          <img src={airlogo} alt="Air University" className="loader-logo" />
+          <div className="loader-side right"><span></span><span></span><span></span></div>
+        </div>
+      )}
     </div>
   );
 };
