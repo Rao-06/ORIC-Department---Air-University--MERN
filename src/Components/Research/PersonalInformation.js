@@ -3,11 +3,9 @@ import Select from 'react-select';
 import { FaArrowLeft, FaEdit, FaMale, FaFemale, FaTransgender, FaUser, FaUserFriends, FaHeartBroken, FaCalendarAlt, FaCheck, FaPencilAlt, FaExclamationCircle } from 'react-icons/fa';
 import { useNavigate } from 'react-router-dom';
 import './PersonalInformation.css';
-<<<<<<< HEAD
+import defaultAvatar from '../../Assets/airlogo.png';
 import { httpRequest } from '../../api/http.js';
-=======
-import defaultAvatar from '../../Assets/profilepic.png';
->>>>>>> 6106e3b84691b7e98ca5d5ea0da8d25c3dbdea48
+import { getCities, isCityValid } from '../../constants/locations.js';
 
 const maritalOptions = [
   { value: 'single', label: 'Single', icon: <FaUser /> },
@@ -279,8 +277,6 @@ const countryList = [
 	"Zimbabwe",
 	"Åland Islands"
 ];
-const getCities = (country) => countryToCities[country] || [];
-const isCityValid = (city, country) => getCities(country).includes(city);
 
 const titleOptions = [
   { value: 'Mr', label: 'Mr' },
@@ -477,11 +473,6 @@ const PersonalInformation = () => {
     const newErrors = validate();
     setErrors(newErrors);
     if (Object.keys(newErrors).length === 0) {
-<<<<<<< HEAD
-      savePersonalInfo().then((ok) => {
-        if (ok) navigate('/educational-information');
-      });
-=======
       navigate('/educational-information');
     } else {
       if (newErrors.title && titleValidityRef.current) {
@@ -490,7 +481,6 @@ const PersonalInformation = () => {
           titleValidityRef.current.reportValidity();
         } catch {}
       }
->>>>>>> 6106e3b84691b7e98ca5d5ea0da8d25c3dbdea48
     }
   };
 
@@ -552,11 +542,7 @@ const PersonalInformation = () => {
             </div>
             <label htmlFor="profilePicInput" className="profile-pic-label">
               <img
-<<<<<<< HEAD
-                src={profilePic || 'https://cdn.pixabay.com/photo/2023/02/18/11/00/icon-7797704_640.png'}
-=======
                 src={profilePic || defaultAvatar}
->>>>>>> 6106e3b84691b7e98ca5d5ea0da8d25c3dbdea48
                 alt="Profile"
                 className="profile-pic profile-pic-square"
               />
@@ -618,10 +604,7 @@ const PersonalInformation = () => {
               {errors.lastName && submitted && <span className="error-message">{errors.lastName}</span>}
             </div>
             <div className="form-group">
-<<<<<<< HEAD
-=======
               <label className="small-label">Marital Status</label>
->>>>>>> 6106e3b84691b7e98ca5d5ea0da8d25c3dbdea48
               <div className="icon-group">
                 {maritalOptions.map(opt => (
                   <button
@@ -637,10 +620,7 @@ const PersonalInformation = () => {
               </div>
             </div>
             <div className="form-group">
-<<<<<<< HEAD
-=======
               <label className="small-label">Gender</label>
->>>>>>> 6106e3b84691b7e98ca5d5ea0da8d25c3dbdea48
               <div className="icon-group">
                 {genderOptions.map(opt => (
                   <button
