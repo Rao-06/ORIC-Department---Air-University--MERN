@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { FaArrowLeft, FaChevronDown, FaExclamationCircle, FaCheck } from 'react-icons/fa';
 import { useNavigate } from 'react-router-dom';
 import './ResearchGrants.css';
+import airlogo from '../../Assets/airlogo.png';
 
 const ResearchGrants = () => {
   const navigate = useNavigate();
@@ -66,6 +67,8 @@ const ResearchGrants = () => {
 
   return (
     <div className="application-form-container">
+      {/* Optional: this page already has global route loader; keep this if you want per-page on mount */}
+      {/* <div className="full-screen-loader">...</div> */}
       {/* Header */}
       <div className="application-header">
         <h1 className="application-title">Application Form</h1>

@@ -1,7 +1,9 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Link, useNavigate, Outlet } from 'react-router-dom';
+import { Link, useNavigate, Outlet, useLocation } from 'react-router-dom';
 import { Nav, NavDropdown, Button } from 'react-bootstrap';
 import { FaUser, FaSignOutAlt, FaHome, FaFlask, FaFileAlt, FaBars, FaTimes, FaCaretUp } from 'react-icons/fa';
+import defaultAvatar from '../../Assets/profilepic.png';
+import airlogo from '../../Assets/airlogo.png';
 import './Layout.css';
 
 const Layout = ({ user, onLogout }) => {
@@ -9,6 +11,8 @@ const Layout = ({ user, onLogout }) => {
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [profileDropdownOpen, setProfileDropdownOpen] = useState(false);
   const profileDropdownRef = useRef(null);
+  const location = useLocation();
+  const [isRouteLoading, setIsRouteLoading] = useState(false);
 
   const handleLogout = () => {
     onLogout();
@@ -45,14 +49,29 @@ const Layout = ({ user, onLogout }) => {
     };
   }, [profileDropdownOpen]);
 
+  // Global route-change loader (fires on path changes)
+  useEffect(() => {
+    setIsRouteLoading(true);
+    const t = setTimeout(() => setIsRouteLoading(false), 900);
+    return () => clearTimeout(t);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [location.pathname]);
+
   return (
     <div className="layout">
+      {isRouteLoading && (
+        <div className="full-screen-loader" role="status" aria-live="polite">
+          <div className="loader-side left"><span></span><span></span><span></span></div>
+          <img src={airlogo} alt="Air University" className="loader-logo" />
+          <div className="loader-side right"><span></span><span></span><span></span></div>
+        </div>
+      )}
       {/* Top Header */}
       <div className="top-header">
         <div className="header-left">
           <div className="logo-section">
-            <div className="logo-circle">AU</div>
-            <span className="logo-text">Admin Panel</span>
+            <img src={airlogo} alt="Air University" className="logo-image" />
+            <span className="logo-text">Air GPMS</span>
           </div>
           <button className="menu-toggle" onClick={toggleSidebar}>
             {sidebarOpen ? <FaTimes /> : <FaBars />}
@@ -65,14 +84,14 @@ const Layout = ({ user, onLogout }) => {
         </div>
           <div className="profile-dropdown-container" ref={profileDropdownRef}>
             <div className="user-icon-container" onClick={toggleProfileDropdown}>
-              <FaUser className="user-icon" />
+              <img src={user?.avatarUrl || defaultAvatar} alt="User" className="user-avatar" />
               <FaCaretUp className={`dropdown-arrow ${profileDropdownOpen ? 'open' : ''}`} />
             </div>
             
             {profileDropdownOpen && (
               <div className="profile-dropdown">
                 <div className="profile-header">
-                  <FaUser className="profile-avatar" />
+                  <img src={user?.avatarUrl || defaultAvatar} alt="User" className="profile-avatar-img" />
                   <div className="profile-info">
                     <div className="profile-name">{user?.name || 'User Name'}</div>
                     <div className="profile-email">{user?.email || 'user@example.com'}</div>

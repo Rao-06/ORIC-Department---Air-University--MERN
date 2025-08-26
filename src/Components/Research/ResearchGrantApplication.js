@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { FaArrowLeft, FaExclamationCircle, FaCheck, FaSpinner, FaSave, FaEye, FaEyeSlash } from 'react-icons/fa';
 import { useNavigate } from 'react-router-dom';
 import './ResearchGrants.css';
+import airlogo from '../../Assets/airlogo.png';
 
 const ResearchGrantApplication = () => {
   const navigate = useNavigate();
@@ -14,6 +15,7 @@ const ResearchGrantApplication = () => {
   });
   const [errors, setErrors] = useState({});
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isPageLoading, setIsPageLoading] = useState(true);
   const [isDirty, setIsDirty] = useState(false);
   const [showPreview, setShowPreview] = useState(false);
 
@@ -29,6 +31,9 @@ const ResearchGrantApplication = () => {
 
   // Load draft on component mount
   useEffect(() => {
+    // Simulate page loading when navigating to this screen
+    const pageLoadTimer = setTimeout(() => setIsPageLoading(false), 900);
+
     const savedDraft = localStorage.getItem('researchGrantDraft');
     if (savedDraft) {
       try {
@@ -39,6 +44,7 @@ const ResearchGrantApplication = () => {
         console.error('Error loading draft:', error);
       }
     }
+    return () => clearTimeout(pageLoadTimer);
   }, []);
 
   const validateForm = () => {
@@ -128,6 +134,17 @@ const ResearchGrantApplication = () => {
 
   return (
     <div className="application-form-container">
+      {isPageLoading && (
+        <div className="full-screen-loader" role="status" aria-live="polite">
+          <div className="loader-side left">
+            <span></span><span></span><span></span>
+          </div>
+          <img src={airlogo} alt="Air University" className="loader-logo" />
+          <div className="loader-side right">
+            <span></span><span></span><span></span>
+          </div>
+        </div>
+      )}
       {/* Header */}
       <div className="application-header">
         <h1 className="application-title">Application Form</h1>
@@ -167,8 +184,7 @@ const ResearchGrantApplication = () => {
       <div className="form-content">
         <div className="step-content">
           <h2>Research Grant Application Form</h2>
-          <form onSubmit={handleSubmit} className="form-section rga-form-section">
-            <div className="form-row two-col">
+          <div className="form-row two-col">
               <div className={`form-group ${errors.researchTitle ? 'error' : ''}`}>
                 <label>Research Title <span className="required">*</span></label>
                 <input
@@ -203,7 +219,6 @@ const ResearchGrantApplication = () => {
                 {errors.researchArea && <span className="error-message">{errors.researchArea}</span>}
               </div>
             </div>
-
             <div className="form-row two-col">
               <div className={`form-group ${errors.duration ? 'error' : ''}`}>
                 <label>Duration (Months) <span className="required">*</span></label>
@@ -221,21 +236,22 @@ const ResearchGrantApplication = () => {
               </div>
               <div className={`form-group ${errors.budgetRequested ? 'error' : ''}`}>
                 <label>Budget Requested (PKR) <span className="required">*</span></label>
-                <div className="input-with-prefix">
-                  <span className="currency-prefix">₨</span>
-                  <input
-                    type="number"
-                    name="budgetRequested"
-                    value={formData.budgetRequested}
-                    onChange={handleInputChange}
-                    placeholder="Enter amount in PKR"
-                    min="0"
-                    className={formData.budgetRequested ? 'has-value' : ''}
-                  />
-                </div>
+                <input
+                  type="number"
+                  name="budgetRequested"
+                  value={formData.budgetRequested}
+                  onChange={handleInputChange}
+                  placeholder="Enter amount in PKR"
+                  min="0"
+                  className={formData.budgetRequested ? 'has-value' : ''}
+                />
                 {errors.budgetRequested && <span className="error-message">{errors.budgetRequested}</span>}
               </div>
             </div>
+          <form onSubmit={handleSubmit} className="form-section rga-form-section">
+            
+
+            
 
             <div className="form-row">
               <div className={`form-group full-width ${errors.researchAbstract ? 'error' : ''}`}>

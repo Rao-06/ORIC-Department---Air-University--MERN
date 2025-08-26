@@ -1,9 +1,10 @@
 
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { FaArrowLeft, FaExclamationCircle, FaCheck, FaPlus, FaGraduationCap } from 'react-icons/fa';
 import { useNavigate } from 'react-router-dom';
 import "./EducationalInformation.css";
+import airlogo from '../../Assets/airlogo.png';
 
 const initialQualification = {
   qualificationLevel: "",
@@ -29,6 +30,11 @@ const initialDegree = {
 
 function EducationalInformation({ onSubmit }) {
   const navigate = useNavigate();
+  const [isPageLoading, setIsPageLoading] = useState(true);
+  useEffect(() => {
+    const t = setTimeout(() => setIsPageLoading(false), 900);
+    return () => clearTimeout(t);
+  }, []);
   const [step, setStep] = useState(1);
   const [qualification, setQualification] = useState(initialQualification);
   const [degree, setDegree] = useState(initialDegree);
@@ -121,6 +127,13 @@ function EducationalInformation({ onSubmit }) {
 
   return (
     <div className="application-form-container">
+      {isPageLoading && (
+        <div className="full-screen-loader" role="status" aria-live="polite">
+          <div className="loader-side left"><span></span><span></span><span></span></div>
+          <img src={airlogo} alt="Air University" className="loader-logo" />
+          <div className="loader-side right"><span></span><span></span><span></span></div>
+        </div>
+      )}
       {/* Header */}
       <div className="application-header">
         <h1 className="application-title">Application Form</h1>
@@ -458,19 +471,7 @@ function EducationalInformation({ onSubmit }) {
             </div>
 
             {/* Navigation Buttons */}
-            <div className="form-navigation nav-bottom">
-              <button type="button" className="nav-button prev-button" onClick={() => navigate('/personal-information')}>
-                GO BACK
-              </button>
-              <div style={{display: 'flex', gap: '10px'}}>
-                <button type="button" className="nav-button save-button">
-                  SAVE & CLOSE
-                </button>
-                <button type="button" className="nav-button next-button" onClick={() => navigate('/employment-information')}>
-                  NEXT STEP
-                </button>
-              </div>
-            </div>
+           
           </form>
           )}
         </div>
