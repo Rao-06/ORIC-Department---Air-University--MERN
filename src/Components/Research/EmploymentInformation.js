@@ -315,9 +315,7 @@ const EmploymentInformation = () => {
                           className={validationErrors.country ? 'error' : ''}
                         >
                           <option value="">Select Country</option>
-                          <option value="Pakistan">Pakistan</option>
-                          <option value="USA">USA</option>
-                          <option value="UK">UK</option>
+                          {countryList.map(c => (<option key={c} value={c}>{c}</option>))}
                         </select>
                         {validationErrors.country && <span className="error-message">{validationErrors.country}</span>}
               </div>
@@ -430,9 +428,7 @@ const EmploymentInformation = () => {
                           className={validationErrors.addressCountry ? 'error' : ''}
                         >
                           <option value="">Select Country</option>
-                          <option value="Pakistan">Pakistan</option>
-                          <option value="USA">USA</option>
-                          <option value="UK">UK</option>
+                          {countryList.map(c => (<option key={c} value={c}>{c}</option>))}
                         </select>
                         {validationErrors.addressCountry && <span className="error-message">{validationErrors.addressCountry}</span>}
                       </div>
@@ -446,9 +442,7 @@ const EmploymentInformation = () => {
                           className={validationErrors.addressCity ? 'error' : ''}
                         >
                           <option value="">Select City</option>
-                          <option value="Karachi">Karachi</option>
-                          <option value="Lahore">Lahore</option>
-                          <option value="Islamabad">Islamabad</option>
+                          {getCities(employmentData.addressCountry).map(c => (<option key={c} value={c}>{c}</option>))}
                         </select>
                         {validationErrors.addressCity && <span className="error-message">{validationErrors.addressCity}</span>}
                       </div>
