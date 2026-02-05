@@ -69,13 +69,16 @@ const Layout = ({ user, onLogout }) => {
       {/* Top Header */}
       <div className="top-header">
         <div className="header-left">
+          
+          {!sidebarOpen && (
+            <button className="menu-toggle" onClick={toggleSidebar}>
+              <FaBars />
+            </button>
+          )}
           <div className="logo-section">
             <img src={airlogo} alt="Air University" className="logo-image" />
             <span className="logo-text">Air GPMS</span>
           </div>
-          <button className="menu-toggle" onClick={toggleSidebar}>
-            {sidebarOpen ? <FaTimes /> : <FaBars />}
-          </button>
         </div>
        
         <div className="header-right">
@@ -121,6 +124,12 @@ const Layout = ({ user, onLogout }) => {
       <div className="main-container">
         {/* Left Sidebar */}
         <div className={`sidebar ${sidebarOpen ? 'open' : 'closed'}`}>
+          {/* Close button for sidebar */}
+          {sidebarOpen && (
+            <button className="sidebar-close-btn" onClick={toggleSidebar}>
+              <FaTimes />
+            </button>
+          )}
           <Nav className="flex-column sidebar-nav">
             <Nav.Link as={Link} to="/dashboard" className="nav-item">
               <FaHome className="nav-icon" />

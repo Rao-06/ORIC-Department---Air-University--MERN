@@ -3,6 +3,8 @@ import { FaArrowLeft, FaExclamationCircle, FaCheck, FaPlus, FaChevronDown, FaChe
 import { useNavigate } from 'react-router-dom';
 import './EmploymentInformation.css';
 import airlogo from '../../Assets/airlogo.png';
+import ProgressTracker from './shared/ProgressTracker.jsx';
+import { countryList, getCities } from '../../constants/locations.js';
 
 const EmploymentInformation = () => {
   const navigate = useNavigate();
@@ -10,6 +12,16 @@ const EmploymentInformation = () => {
   useEffect(() => {
     const t = setTimeout(() => setIsPageLoading(false), 900);
     return () => clearTimeout(t);
+  }, []);
+  // Ensure view starts at top when this page loads
+  useEffect(() => {
+    try {
+      const scrollContainer = document.querySelector('.main-content');
+      if (scrollContainer) {
+        scrollContainer.scrollTo({ top: 0, behavior: 'auto' });
+      }
+      window.scrollTo({ top: 0, left: 0, behavior: 'auto' });
+    } catch {}
   }, []);
 
   // Empty-state vs wizard visibility
@@ -30,7 +42,6 @@ const EmploymentInformation = () => {
     category: '',
     employerName: '',
     centers: '',
-    jobTitle: '', // kept for future use
     employmentType: '', // kept for future use
     department: '', // kept for future use
     // Section 2 - Organization Details
@@ -116,24 +127,7 @@ const EmploymentInformation = () => {
     }
   };
 
-  const isFieldDisabled = (fieldName) => {
-    // Section 1 fields are always enabled
-    if (['country', 'sector', 'category', 'employerName', 'organizationType'].includes(fieldName)) {
-      return false;
-    }
-    
-    // Section 2 fields require Section 1 to be complete
-    if (['addressCountry', 'addressCity', 'addressLine', 'contactCountryCode', 'contactNumber', 'officeEmail', 'website'].includes(fieldName)) {
-      return !isSectionComplete(0);
-    }
-    
-    // Section 3 fields require Section 2 to be complete
-    if (['jobType', 'jobTitle', 'fieldOfWork', 'careerLevel', 'startDate', 'endDate', 'currentlyWorking', 'jobDescription'].includes(fieldName)) {
-      return !isSectionComplete(1);
-    }
-    
-    return false;
-  };
+
 
 
 
@@ -173,7 +167,47 @@ const EmploymentInformation = () => {
 
   const toggleSection = (index) => {
     setActiveSectionIndex((prev) => (prev === index ? -1 : index));
+    // After state updates, ensure the header of the opened section scrolls into view from the top
+    requestAnimationFrame(() => {
+      try {
+        const headers = document.querySelectorAll('.accordion-section .accordion-header');
+        const targetHeader = headers[index];
+        if (targetHeader && typeof targetHeader.scrollIntoView === 'function') {
+          targetHeader.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+      } catch {}
+    });
   };
+
+  // Keep a simple safety: if active section changes programmatically, scroll to its header
+  useEffect(() => {
+    if (activeSectionIndex >= 0) {
+      const id = requestAnimationFrame(() => {
+        try {
+          const headers = document.querySelectorAll('.accordion-section .accordion-header');
+          const targetHeader = headers[activeSectionIndex];
+          if (targetHeader && typeof targetHeader.scrollIntoView === 'function') {
+            targetHeader.scrollIntoView({ behavior: 'smooth', block: 'start' });
+          }
+        } catch {}
+      });
+      return () => cancelAnimationFrame(id);
+    }
+  }, [activeSectionIndex]);
+
+  // When wizard first shows, ensure we start at the first section's top
+  useEffect(() => {
+    if (showEmploymentWizard) {
+      try {
+        const firstHeader = document.querySelector('.accordion-section .accordion-header');
+        if (firstHeader && typeof firstHeader.scrollIntoView === 'function') {
+          firstHeader.scrollIntoView({ behavior: 'auto', block: 'start' });
+        } else {
+          window.scrollTo({ top: 0, left: 0, behavior: 'auto' });
+        }
+      } catch {}
+    }
+  }, [showEmploymentWizard]);
 
   const handleSaveAndClose = () => {
     // Persist to backend later; for now keep in local state
@@ -222,33 +256,9 @@ const EmploymentInformation = () => {
         </button>
       </div>
 
-      {/* Important Note (Employment-specific) */}
-      <div className="modern-note" style={{ marginTop: 0 }}>
-        <FaExclamationCircle className="note-icon" />
-        <span className="note-text">
-          Applicant of ASIP is not bound to enter any information regarding Employment
-        </span>
-      </div>
-
       {/* Progress Tracker */}
       <div className="progress-tracker-card">
-        <div className="modern-progress-tracker">
-        {steps.map((step, index) => (
-            <div key={step.id} className="modern-step-container">
-            <div 
-                className={`step-circle ${step.completed ? 'completed' : step.active ? 'active' : 'inactive'}`}
-              onClick={() => handleStepClick(step.id)}
-              style={{ cursor: step.completed || step.active ? 'pointer' : 'default' }}
-            >
-                {step.completed ? <FaCheck /> : <span>{step.id}</span>}
-              </div>
-              <span className={`step-label ${step.active ? 'active' : step.completed ? 'completed' : ''}`}>
-                {step.title}
-              </span>
-              {index < steps.length - 1 && <div className="modern-step-connector" />}
-            </div>
-          ))}
-          </div>
+        <ProgressTracker steps={steps} onStepClick={handleStepClick} />
       </div>
 
       {/* Content */}

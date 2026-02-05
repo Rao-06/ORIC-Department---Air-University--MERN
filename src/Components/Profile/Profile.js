@@ -1,25 +1,54 @@
 import React, { useState } from 'react';
-import { FaUser, FaEnvelope, FaPhone, FaMapMarkerAlt, FaEdit, FaSave, FaHome } from 'react-icons/fa';
 import './Profile.css';
+
+// Import section components
+import PersonalDetails from './sections/PersonalDetails.js';
+import ContactDetails from './sections/ContactDetails.js';
+import EducationDetails from './sections/EducationDetails.js';
+import EmploymentDetails from './sections/EmploymentDetails.js';
+import PublicationDetails from './sections/PublicationDetails.js';
+import ProjectDetails from './sections/ProjectDetails.js';
+import CertificationDetails from './sections/CertificationDetails.js';
+import SkillsDetails from './sections/SkillsDetails.js';
+import UploadDetails from './sections/UploadDetails.js';
 
 const Profile = ({ user }) => {
   const [activeTab, setActiveTab] = useState('personal');
   const [formData, setFormData] = useState({
+    // Personal Details
     title: '',
     firstName: '',
     middleName: '',
     lastName: '',
     fullName: '',
-    maritalStatus: 'married'
+    dateOfBirth: '',
+    gender: '',
+    nationality: '',
+    maritalStatus: 'married',
+    
+    // Contact Details
+    email: '',
+    phone: '',
+    alternativePhone: '',
+    website: '',
+    currentAddress: '',
+    city: '',
+    state: '',
+    postalCode: '',
+    country: '',
+    emergencyContactName: '',
+    emergencyContactPhone: '',
+    emergencyContactRelationship: '',
+    
+    // Education, Employment, Publications, Projects, Certifications, Skills, Uploads
+    education: [],
+    employment: [],
+    publications: [],
+    projects: [],
+    certifications: [],
+    skills: [],
+    uploadedFiles: {}
   });
-
-  const handleInputChange = (e) => {
-    const { name, value } = e.target;
-    setFormData(prev => ({
-      ...prev,
-      [name]: value
-    }));
-  };
 
   const tabs = [
     { id: 'personal', label: 'Personal Details' },
@@ -30,10 +59,54 @@ const Profile = ({ user }) => {
     { id: 'project', label: 'Project' },
     { id: 'certifications', label: 'Certifications' },
     { id: 'skills', label: 'Skills' },
-    { id: 'affiliations', label: 'Affiliations' },
-    { id: 'references', label: 'References' },
     { id: 'upload', label: 'Upload' }
   ];
+
+  const handleNext = () => {
+    const currentIndex = tabs.findIndex(tab => tab.id === activeTab);
+    if (currentIndex < tabs.length - 1) {
+      setActiveTab(tabs[currentIndex + 1].id);
+    }
+  };
+
+  const handleBack = () => {
+    const currentIndex = tabs.findIndex(tab => tab.id === activeTab);
+    if (currentIndex > 0) {
+      setActiveTab(tabs[currentIndex - 1].id);
+    }
+  };
+
+  const renderActiveSection = () => {
+    const props = {
+      formData,
+      setFormData,
+      onNext: handleNext,
+      onBack: handleBack
+    };
+
+    switch (activeTab) {
+      case 'personal':
+        return <PersonalDetails {...props} />;
+      case 'contact':
+        return <ContactDetails {...props} />;
+      case 'education':
+        return <EducationDetails {...props} />;
+      case 'employment':
+        return <EmploymentDetails {...props} />;
+      case 'publication':
+        return <PublicationDetails {...props} />;
+      case 'project':
+        return <ProjectDetails {...props} />;
+      case 'certifications':
+        return <CertificationDetails {...props} />;
+      case 'skills':
+        return <SkillsDetails {...props} />;
+      case 'upload':
+        return <UploadDetails {...props} />;
+      default:
+        return <PersonalDetails {...props} />;
+    }
+  };
 
   return (
     <div className="profile-page">
@@ -60,128 +133,7 @@ const Profile = ({ user }) => {
 
       {/* Content Area */}
       <div className="content-area">
-        {activeTab === 'personal' && (
-          <div className="personal-details">
-            <h2 className="section-title">Tell us about Yourself!</h2>
-            
-            <form className="profile-form">
-              <div className="form-row">
-                <div className="form-group">
-                  <label>Title</label>
-                  <input
-                    type="text"
-                    name="title"
-                    value={formData.title}
-                    onChange={handleInputChange}
-                    placeholder="Enter title"
-                  />
-                </div>
-              </div>
-
-              <div className="form-row">
-                <div className="form-group">
-                  <label>First Name</label>
-                  <input
-                    type="text"
-                    name="firstName"
-                    value={formData.firstName}
-                    onChange={handleInputChange}
-                    placeholder="Enter first name"
-                  />
-                </div>
-                <div className="form-group">
-                  <label>Middle Name</label>
-                  <input
-                    type="text"
-                    name="middleName"
-                    value={formData.middleName}
-                    onChange={handleInputChange}
-                    placeholder="Enter middle name"
-                  />
-                </div>
-                <div className="form-group">
-                  <label>Last Name</label>
-                  <input
-                    type="text"
-                    name="lastName"
-                    value={formData.lastName}
-                    onChange={handleInputChange}
-                    placeholder="Enter last name"
-                  />
-                </div>
-              </div>
-
-              <div className="form-row">
-                <div className="form-group">
-                  <label>Full Name</label>
-                  <input
-                    type="text"
-                    name="fullName"
-                    value={formData.fullName}
-                    onChange={handleInputChange}
-                    placeholder="Full name will be auto-generated"
-                    className="readonly-field"
-                    readOnly
-                  />
-                </div>
-              </div>
-
-              <div className="form-row">
-                <div className="form-group">
-                  <label>Marital Status</label>
-                  <div className="radio-group">
-                    <div className="radio-option">
-                      <input
-                        type="radio"
-                        name="maritalStatus"
-                        value="married"
-                        checked={formData.maritalStatus === 'married'}
-                        onChange={handleInputChange}
-                      />
-                      <label>Married</label>
-                    </div>
-                    <div className="radio-option">
-                      <input
-                        type="radio"
-                        name="maritalStatus"
-                        value="separated"
-                        checked={formData.maritalStatus === 'separated'}
-                        onChange={handleInputChange}
-                      />
-                      <label>Separated/Divorced</label>
-                    </div>
-                    <div className="radio-option">
-                      <input
-                        type="radio"
-                        name="maritalStatus"
-                        value="single"
-                        checked={formData.maritalStatus === 'single'}
-                        onChange={handleInputChange}
-                      />
-                      <label>Single</label>
-                    </div>
-                    <div className="radio-option">
-                      <input
-                        type="radio"
-                        name="maritalStatus"
-                        value="widowed"
-                        checked={formData.maritalStatus === 'widowed'}
-                        onChange={handleInputChange}
-                      />
-                      <label>Widowed</label>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </form>
-          </div>
-        )}
-
-        {activeTab !== 'personal' && (
-          <div className="tab-content">
-            <p>Content for {tabs.find(tab => tab.id === activeTab)?.label} will be added here.</p>
-          </div>
-        )}
+        {renderActiveSection()}
       </div>
     </div>
   );

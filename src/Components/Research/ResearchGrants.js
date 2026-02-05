@@ -3,6 +3,8 @@ import { FaArrowLeft, FaChevronDown, FaExclamationCircle, FaCheck } from 'react-
 import { useNavigate } from 'react-router-dom';
 import './ResearchGrants.css';
 import airlogo from '../../Assets/airlogo.png';
+import ProgressTracker from './shared/ProgressTracker.jsx';
+import FormNavigation from './shared/FormNavigation.jsx';
 
 const ResearchGrants = () => {
   const navigate = useNavigate();
@@ -80,32 +82,7 @@ const ResearchGrants = () => {
 
       {/* Progress Tracker Card */}
       <div className="progress-tracker-card">
-        <div className="important-note modern-note">
-          <FaExclamationCircle className="note-icon" />
-          <span className="note-text">
-            Note: Last date of <strong>"PERIDOT Research Program"</strong> application submission is{' '}
-            <span className="deadline">"23/09/25 at 11:59PM"</span>. Saved applications will not be considered after this time.
-          </span>
-        </div>
-        <div className="modern-progress-tracker">
-          {steps.map((step, index) => (
-            <div key={step.id} className="modern-step-container">
-              <div 
-                className={`step-circle ${step.completed ? 'completed' : step.active ? 'active' : 'inactive'}`}
-                onClick={() => handleStepClick(step.id)}
-                style={{ cursor: step.completed || step.active ? 'pointer' : 'default' }}
-              >
-                {step.completed ? (
-                  <FaCheck className="step-icon" />
-                ) : (
-                  <span>{step.id}</span>
-                )}
-              </div>
-              <span className={`step-label ${step.active ? 'active' : step.completed ? 'completed' : ''}`}>{step.title}</span>
-              {index < steps.length - 1 && <div className="modern-step-connector" />}
-            </div>
-          ))}
-        </div>
+        <ProgressTracker steps={steps} onStepClick={handleStepClick} />
       </div>
 
       {/* Form Content */}
@@ -188,14 +165,13 @@ const ResearchGrants = () => {
 
           {/* Next Step Button */}
           {selectedOption && (
-            <div className="next-step-container">
-              <button 
-                className="next-step-button"
-                onClick={() => navigate('/personal-information')}
-              >
-                Next Step
-              </button>
-            </div>
+            <FormNavigation 
+              onPrev={() => navigate('/dashboard')}
+              showSaveClose={false}
+              onNext={() => navigate('/personal-information')}
+              prevText="GO BACK"
+              nextText="NEXT STEP"
+            />
           )}
         </div>
       </div>

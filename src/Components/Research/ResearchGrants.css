@@ -4,7 +4,9 @@
   margin: 0 auto;
   padding: 20px;
   background-color: #f9f9fc;
-  min-height: 100vh;
+  /* Avoid nested page scrollbars on this screen */
+  min-height: auto;
+  overflow-y: visible;
 }
 
 /* Full-screen loader */
@@ -479,11 +481,15 @@
   align-items: center;
   justify-content: center;
   gap: 0;
-  background: #fff;
-  border-radius: 10px;
-  padding: 6px 2px;
-  border: 1px solid #ececec;
+  background: #fbfbfc; /* stronger background */
+  border-radius: 12px;
+  padding: 10px 6px; /* more breathing room */
+  border: 2px solid #e3e3e6; /* thicker border */
+  width: 100%;
+  overflow: hidden; /* prevent focus ring/bleed */
 }
+
+.modern-progress-tracker *:focus { outline: none !important; box-shadow: none !important; }
 
 .modern-step-container { display: flex; align-items: center; gap: 8px; }
 
@@ -520,10 +526,10 @@
 .step-label.active { color: #1a1447; font-weight: 700; }
 .step-label.completed { color: #00b068; font-weight: 600; }
 
-.modern-step-connector { width: 28px; height: 2px; background: #e5e7eb; margin: 0 1px; border-radius: 1px; }
+.modern-step-connector { width: 32px; height: 3px; background: #e5e7eb; margin: 0 1px; border-radius: 2px; }
 
 /* Basic form card to match others */
-.form-content { max-width: 1200px; margin: 0 auto; background: #ffffff; border-radius: 12px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); overflow: hidden; }
+.form-content { max-width: 1200px; margin: 0 auto; background: #ffffff; border-radius: 12px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); overflow: visible; }
 .step-content { padding: 30px; }
 
 /* Navigation buttons */

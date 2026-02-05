@@ -30,21 +30,23 @@
 @keyframes pulse { 0%,100%{ transform:scale(.7); opacity:.5 } 50%{ transform:scale(1); opacity:1 } }
 html, body {
   height: 100%;
-  min-height: 650px;
-  
+  min-height: 100vh;
   background: radial-gradient(circle at center, #93cfff 0%, #219dff 100%);
   margin: 0;
   padding: 0;
+  overflow-x: hidden;
+  overflow-y: auto;
 }
 
 .login-container {
   width: 100%;
-  min-height: 650px;
+  min-height: 100vh;
   display: flex;
   align-items: center;
   justify-content: center;
   background: transparent;
   overflow-x: hidden;
+  
 }
 
 .container {
@@ -53,14 +55,13 @@ html, body {
   display: flex;
   align-items: center;
   justify-content: center;
-
   padding-left: 0 !important;
   padding-right: 0 !important;
-  margin-top: -60px;
-
+  margin: 10px 0;
 }
 .form-section{
-  padding: 0px 40px;
+  padding: 40px;
+  margin: 20px 0;
 }
 
 
@@ -211,6 +212,7 @@ html, body {
 @media (max-width: 900px) {
   .login-container{
     min-height: 100vh;
+    padding: 20px 0;
   }
   .container {
     width: 90% !important;
@@ -218,7 +220,7 @@ html, body {
     min-height: auto;
     padding: 0;
     background: transparent !important;
-    margin-top: 0;
+    margin: 20px 0;
   }
   .card {
     border-radius: 0;
@@ -242,7 +244,7 @@ html, body {
     min-height: auto;
     padding: 0;
     background: transparent !important;
-    margin-top: 0;
+    margin: 20px 0;
   }
   
   .row {
@@ -265,6 +267,7 @@ html, body {
   .form-section {
     padding: 30px 20px;
     width: 100%;
+    margin: 15px 0;
   }
   
   .card-img-top {

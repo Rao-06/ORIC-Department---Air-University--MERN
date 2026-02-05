@@ -5,6 +5,7 @@ import { FaArrowLeft, FaExclamationCircle, FaCheck, FaPlus, FaGraduationCap } fr
 import { useNavigate } from 'react-router-dom';
 import "./EducationalInformation.css";
 import airlogo from '../../Assets/airlogo.png';
+import ProgressTracker from './shared/ProgressTracker.jsx';
 
 const initialQualification = {
   qualificationLevel: "",
@@ -34,6 +35,16 @@ function EducationalInformation({ onSubmit }) {
   useEffect(() => {
     const t = setTimeout(() => setIsPageLoading(false), 900);
     return () => clearTimeout(t);
+  }, []);
+  // Ensure view starts at top when this page loads
+  useEffect(() => {
+    try {
+      const scrollContainer = document.querySelector('.main-content');
+      if (scrollContainer) {
+        scrollContainer.scrollTo({ top: 0, behavior: 'auto' });
+      }
+      window.scrollTo({ top: 0, left: 0, behavior: 'auto' });
+    } catch {}
   }, []);
   const [step, setStep] = useState(1);
   const [qualification, setQualification] = useState(initialQualification);
@@ -145,42 +156,13 @@ function EducationalInformation({ onSubmit }) {
 
       {/* Progress Tracker Card */}
       <div className="progress-tracker-card">
-        <div className="important-note modern-note">
-          <FaExclamationCircle className="note-icon" />
-          <span className="note-text">
-            Note: Last date of <strong>"PERIDOT Research Program"</strong> application submission is{' '}
-            <span className="deadline">"23/09/25 at 11:59PM"</span>. Saved applications will not be considered after this time.
-          </span>
-        </div>
-        <div className="modern-progress-tracker">
-          {steps.map((step, index) => (
-            <div key={step.id} className="modern-step-container">
-              <div 
-                className={`step-circle ${step.completed ? 'completed' : step.active ? 'active' : 'inactive'}`}
-                onClick={() => handleStepClick(step.id)}
-                style={{ cursor: step.completed || step.active ? 'pointer' : 'default' }}
-              >
-                {step.completed ? (
-                  <FaCheck className="step-icon" />
-                ) : (
-                  <span>{step.id}</span>
-                )}
-              </div>
-              <span className={`step-label ${step.active ? 'active' : step.completed ? 'completed' : ''}`}>{step.title}</span>
-              {index < steps.length - 1 && <div className="modern-step-connector" />}
-            </div>
-          ))}
-        </div>
+        <ProgressTracker steps={steps} onStepClick={handleStepClick} />
       </div>
 
       {/* Form Content */}
       <div className="form-content">
         <div className="step-content">
           <h2>Education Details</h2>
-          <div className="education-warning">
-            <span className="icon-warning">i</span>
-            While you may enter your complete education record, the system only checks your highest education i.e. Doctorate or Masters Degree
-          </div>
           {/* Empty state first */}
           {!showEducationForm && (
             <div className="employment-empty-state" style={{marginBottom:'8px'}}>

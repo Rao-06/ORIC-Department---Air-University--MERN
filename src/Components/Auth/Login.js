@@ -4,6 +4,7 @@ import './Login.css'; // Ensure this path is correct
 import { FaEnvelope, FaLock, FaUser } from 'react-icons/fa';
 import { Link, useNavigate } from 'react-router-dom';
 import logosvg from '../../Assets/svg.svg';
+import { httpRequest } from '../../api/http.js';
 
 const Login = ({ onLogin }) => {
   const navigate = useNavigate();
@@ -16,27 +17,32 @@ const Login = ({ onLogin }) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
-    
-    // Basic frontend validation
+
     if (!employeeId || !password) {
       setError('Please fill in all fields');
       return;
     }
-    
-    // Simulate login success for demo
-    const userData = {
-      employeeId: employeeId,
-      name: 'John Doe',
-      email: 'john.doe@au.edu.pk',
-      department: 'Computer Science',
-      designation: 'Assistant Professor'
-    };
-    
-    onLogin(userData);
-    setIsLoggingIn(true);
-    setTimeout(() => {
+
+    try {
+      setIsLoggingIn(true);
+      const data = await httpRequest('/auth/login', {
+        method: 'POST',
+        body: { employeeId, password },
+      });
+
+      if (data?.token) {
+        try { localStorage.setItem('auth_token', data.token); } catch {}
+      }
+
+      const user = data?.user || { employeeId };
+      if (onLogin) onLogin(user);
+
       navigate('/dashboard');
-    }, 1200);
+    } catch (err) {
+      const message = err?.data?.error || err?.message || 'Login failed';
+      setError(message);
+      setIsLoggingIn(false);
+    }
   };
 
   return (
@@ -87,8 +93,8 @@ const Login = ({ onLogin }) => {
                 />
                 <label htmlFor="showPassword" className="form-check-label ms-2">Show Password</label>
               </div>
-              <button type="submit" className="btn btn-primary w-100 mb-3">
-                Login
+              <button type="submit" className="btn btn-primary w-100 mb-3" disabled={isLoggingIn}>
+                {isLoggingIn ? 'Logging in…' : 'Login'}
               </button>
               {error && <p className="text-danger text-center">{error}</p>}
              <a href="/forgot-password" className="d-block text-end"

@@ -6,6 +6,7 @@ import { FaUser, FaEnvelope, FaLock, FaPhone, FaIdCard, FaEye, FaEyeSlash } from
 
 import logosvg from '../../Assets/svg.svg';
 import { httpRequest } from '../../api/http.js';
+import { getCities } from '../../constants/locations.js';
 const Signup = ({ onSignup }) => {
   const [formData, setFormData] = useState({
     name: '',
@@ -30,6 +31,9 @@ const Signup = ({ onSignup }) => {
     document.body.classList.add('signup-bg');
     return () => document.body.classList.remove('signup-bg');
   }, []);
+
+  const pakistanCities = getCities('Pakistan');
+
 
   const validateField = (name, value) => {
     let error = '';
@@ -134,7 +138,7 @@ const Signup = ({ onSignup }) => {
 
   return (
     <div className="signup-container">
-      <div className="container d-flex align-items-center justify-content-center" style={{ height: '700px' , margin: '10px 0px' , width: '1200px' }}>
+      <div className="container d-flex align-items-center justify-content-center" style={{ minHeight: '100vh', margin: '10px 0px', width: '100%', maxWidth: '1200px' }}>
         <div className="card flex-row w-100 h-100 p-0" >
           {/* Form Section */}
           <div className="form-section d-flex flex-column justify-content-center p-5" style={{ flex: 1 }}>
@@ -265,22 +269,22 @@ const Signup = ({ onSignup }) => {
               <div className="mb-3">
                 <label htmlFor="city" className="form-label">City</label>
                 <select
-                  name="city"
-                  className={`form-control ${fieldErrors.city && touched.city ? 'is-invalid' : ''}`}
-                  id="city"
-                  value={formData.city}
-                  onChange={handleChanges}
-                  onBlur={handleBlur}
-                  required
-                  aria-required="true"
-                  aria-invalid={!!fieldErrors.city}
-                >
-                  <option value="">Select a city</option>
-                  <option value="Multan">Multan</option>
-                  <option value="Islamabad">Islamabad</option>
-                  <option value="Kamra">Kamra</option>
-                  <option value="Karachi">Karachi</option>
-                </select>
+                    name="city"
+                    className={`form-control ${fieldErrors.city && touched.city ? 'is-invalid' : ''}`}
+                    id="city"
+                    value={formData.city}
+                    onChange={handleChanges}
+                    onBlur={handleBlur}
+                    required
+                    aria-required="true"
+                    aria-invalid={!!fieldErrors.city}
+                    size={5}   // 👈 shows only 5 cities at a time
+                  >
+                    {pakistanCities.map(c => (
+                      <option key={c} value={c}>{c}</option>
+                    ))}
+                  </select>
+
                 {fieldErrors.city && touched.city && <div className="invalid-feedback">{fieldErrors.city}</div>}
               </div>
               <div className="mb-3 row">
